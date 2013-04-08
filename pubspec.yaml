@@ -1,4 +1,0 @@
-name: vertie
-description: Vertie simulation tool
-dependencies:
-  browser: any
