@@ -20,14 +20,15 @@ class VertiePoint {
   
   /* Return the neareast point from a list of points */
   VertiePoint nearest(List<VertiePoint> points) {
-    VertiePoint nearest_point = null;
-    num min_length = 0;
-    for (final point in points) {
+    VertiePoint nearest_point = points[0];
+    num min_length = this.squaredDistanceTo(points[0]);
+    for (var point in points) {
       num length = this.squaredDistanceTo(point);
       if (length < min_length) {
         nearest_point = point;
       }
     }
+    return nearest_point;
   }
 }
 
@@ -83,9 +84,8 @@ class VertieLine {
     VertiePoint p;
     vi = this.intersection_point(C.center);
     p = vi.point;
-    if(vi.in_segment) {
-      p = C.center.nearest([this.A, this.B]);
-    }
+    if(!vi.in_segment)
+      p = C.center.nearest([this.A, this.B]);       
     distance = p.distanceTo(C.center);
     if(distance > C.radius) return null; else return p;
   }
