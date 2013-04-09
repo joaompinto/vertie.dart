@@ -1,2 +1,6 @@
+packages/
+web/packages/
 web/*.js*
+
 .settings/
+pubspec.lock
