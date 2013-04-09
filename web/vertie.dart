@@ -62,11 +62,11 @@ class VertieLine {
       in_segement - True if the point is contained in the line seg
     Math from http://paulbourke.net/geometry/pointline/
     */
-    num intersection_x;
-    num intersection_y;
-    bool in_segment;
+    var intersection_x;
+    var intersection_y;
+    var in_segment;
 
-    num line_length = A.squaredDistanceTo(B);
+    num line_length = A.distanceTo(B);
     num u = (((C.x - A.x ) * ( B.x - A.x )) +
         ((C.y - A.y) * (B.y - A.y))) / ( line_length * line_length);
 
@@ -160,7 +160,7 @@ class VertieWorld {
   VertieVector gravity;
 
   VertieWorld(this.width, this.height,
-      [this.damping = 0.95, this.friction = 0]) {
+      [this.damping = 0.9, this.friction = 0]) {
     circle_shapes = [];
     lines = [];
     gravity = new VertieVector(0,0);
@@ -222,21 +222,21 @@ class VertieWorld {
           continue;
 
         // record velocity
-        num v1x = (shape.center.x - shape.prev_center.x) * damping;
-        num v1y = (shape.center.y - shape.prev_center.y) * damping;
+        final v1x = (shape.center.x - shape.prev_center.x) * damping;
+        final v1y = (shape.center.y - shape.prev_center.y) * damping;
 
-        num x = shape.center.x - contact_point.x;
-        num y = shape.center.y - contact_point.y;
-        num length = contact_point.distanceTo(shape.center);
-        num target = shape.radius;
-        num factor = (length-target)/length;
+        final x = shape.center.x - contact_point.x;
+        final y = shape.center.y - contact_point.y;
+        final length = contact_point.distanceTo(shape.center);
+        final target = shape.radius;
+        final factor = (length-target)/length;
         shape.center.x -= x*factor;
         shape.center.y -= y*factor;
 
         if(preserve_impulse) {
-          num factor_y = shape.radius*sin(atan2(x.toInt(), y.toInt()));
-          num factor_x = shape.radius*cos(atan2(y..toInt(), x.toInt()));
-          num delta_y = contact_point.y -  shape.center.y;
+          final factor_y = shape.radius*sin(atan2(y.toInt(), x.toInt()));
+          final factor_x = shape.radius*cos(atan2(y.toInt(), x.toInt()));
+          final delta_y = contact_point.y -  shape.center.y;
           if(delta_y.abs() <= shape.radius)
             shape.prev_center.y = contact_point.y+factor_y+v1y;
         }
@@ -246,10 +246,10 @@ class VertieWorld {
 
   void border_collide_preserve_impulse() {
     for(final shape in circle_shapes) {
-      num radius = shape.radius;
-      num x = shape.center.x;
-      num y = shape.center.y;
-      num vx, vy;
+      final radius = shape.radius;
+      final x = shape.center.x;
+      final y = shape.center.y;
+      var vx = 0, vy = 0;
 
       if(shape.center.x-radius < 0) {
         vx = (shape.prev_center.x - shape.center.x)*damping;
@@ -276,9 +276,9 @@ class VertieWorld {
 
   void border_collide() {
     for(final shape in circle_shapes) {
-      num radius = shape.radius;
-      num x = shape.center.x;
-      num y = shape.center.y;
+      final radius = shape.radius;
+      final x = shape.center.x;
+      final y = shape.center.y;
       if(x-radius < 0)
         shape.center.x = radius;
       else if(x + radius > width)
@@ -298,22 +298,22 @@ class VertieWorld {
   }
 
   void apply_friction() {
-    for(VertieCircleShape shape in circle_shapes)
+    for(final shape in circle_shapes)
       shape.apply_friction(friction);
   }
 
   void inertia() {
-    for(VertieCircleShape shape in circle_shapes)
+    for(final shape in circle_shapes)
       shape.inertia();
   }
 
   void accelerate(delta) {
-    for(VertieCircleShape shape in this.circle_shapes)
+    for(final shape in this.circle_shapes)
       shape.accelerate(delta);
   }
 
   void step() {
-    num steps = 2;
+    num steps = 5;
     num delta = 1.0/steps;
     for (var i = 0; i < steps; i++) {
       if(friction != 0)
