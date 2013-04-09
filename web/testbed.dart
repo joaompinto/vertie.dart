@@ -36,7 +36,7 @@ void showFps(num fps) {
 /**
  */
 class SimulationSystem {
-  
+
   CanvasElement canvas;
   Random rng;
 
@@ -47,8 +47,17 @@ class SimulationSystem {
 
   num renderTime;
 
+  VertiePoint line_start_pos, line_end_pos;
+
+
   SimulationSystem(this.canvas) {
-    this.rng = new Random();
+    line_start_pos = null;
+    rng = new Random();
+    var canvas = this.canvas;
+    canvas.onMouseDown.listen(onMouseDown);
+    canvas.onMouseUp.listen(onMouseUp);
+    canvas.onContextMenu.listen(onContextMenu); // No need for a context menu
+    canvas.onMouseMove.listen(onMouseMove);
   }
 
   num get width => _width;
@@ -74,15 +83,41 @@ class SimulationSystem {
     world = new VertieWorld(width, height);
     world.gravity = new VertieVector(0, 0.5);
 
-    for(var i=0; i<50; i++) {
-      var pos = new VertiePoint(rng.nextInt(width), rng.nextInt(height)); 
-      var circle = new VertieCircleShape(pos, 20);
-      world.add_circle_shape(circle);
-    }
-    
     // Start the animation loop.
     requestRedraw();
   }
+
+  void onMouseDown(MouseEvent e) {
+    var pos = new VertiePoint(e.offset.x, e.offset.y);
+    if(e.button == 0) {
+      var circle = new VertieCircleShape(pos, 20);
+      world.add_circle_shape(circle);
+    } else if(e.button == 2) {
+      line_start_pos = pos;
+    }
+    e.preventDefault(); // Avoids triggering a canvas selection
+  }
+
+  void onMouseUp(MouseEvent e) {
+    if(e.button == 2 && line_start_pos != null) {
+      var pos = new VertiePoint(e.offset.x, e.offset.y);
+      if(line_start_pos.distanceTo(pos) > 5) {
+        var line = new VertieLine(line_start_pos, pos);
+        world.lines.add(line);
+      }
+    }
+    line_start_pos = null;
+    line_end_pos = null;
+  }
+
+  void onMouseMove(MouseEvent e) {
+    var pos = new VertiePoint(e.offset.x, e.offset.y);
+    if(line_start_pos != null) {
+      line_end_pos = pos;
+    }
+  }
+
+  void onContextMenu(MouseEvent e) {e.preventDefault(); }
 
   void draw(num _) {
     num time = new DateTime.now().millisecondsSinceEpoch;
@@ -94,9 +129,11 @@ class SimulationSystem {
     renderTime = time;
 
     var context = canvas.context2d;
-    
+
     drawBackground(context);
     drawCircles(context);
+    drawPlacingLine(context);
+    drawStaticLines(context);
 
     world.step();
     requestRedraw();
@@ -106,10 +143,38 @@ class SimulationSystem {
     context.clearRect(0, 0, width, height);
   }
 
+  void drawPlacingLine(CanvasRenderingContext2D context) {
+    if(line_start_pos != null && line_end_pos != null) {
+      var color = "#00FF00";
+      context.lineWidth = 0.5;
+      context.fillStyle = color;
+      context.strokeStyle = color;
+      context.beginPath();
+      context.moveTo(line_start_pos.x, line_start_pos.y);
+      context.lineTo(line_end_pos.x, line_end_pos.y);
+      context.closePath();
+      context.stroke();
+    }
+  }
+
+  void drawStaticLines(CanvasRenderingContext2D context) {
+    for(final line in world.lines) {
+      var color = "#00AA00";
+      context.lineWidth = 0.5;
+      context.fillStyle = color;
+      context.strokeStyle = color;
+      context.beginPath();
+      context.moveTo(line.A.x, line.A.y);
+      context.lineTo(line.B.x, line.B.y);
+      context.closePath();
+      context.stroke();
+    }
+  }
+
   void drawCircles(CanvasRenderingContext2D context) {
-    for(VertieCircleShape shape in this.world.circle_shapes) {
+    for(final shape in world.circle_shapes) {
       // Draw the figure.
-      String color = "#0000FF";
+      var color = "#0000FF";
       context.lineWidth = 0.5;
       context.fillStyle = color;
       context.strokeStyle = color;

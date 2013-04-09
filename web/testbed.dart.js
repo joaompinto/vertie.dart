@@ -1248,25 +1248,7 @@ $$.JSString = {"": "Object;",
   $isString: true
 };
 
-$$._Random = {"": "Object;",
-  nextInt$1: function(max) {
-    if (typeof max !== "number")
-      return this.nextInt$1$bailout(1, max);
-    if (max < 0)
-      throw $.$$throw($.ArgumentError$("negative max: " + $.S(max)));
-    if (max > 4294967295)
-      max = 4294967295;
-    return (Math.random() * max) >>> 0;
-  },
-  nextInt$1$bailout: function(state0, max) {
-    var t1 = $.getInterceptor$n(max);
-    if (t1.$lt(max, 0) === true)
-      throw $.$$throw($.ArgumentError$("negative max: " + $.S(max)));
-    if (t1.$gt(max, 4294967295) === true)
-      max = 4294967295;
-    return (Math.random() * max) >>> 0;
-  }
-};
+$$._Random = {"": "Object;"};
 
 $$.MetaInfo = {"": "Object;_tag<,_tags,_set<"};
 
@@ -3238,24 +3220,79 @@ $$.EventStreamProvider = {"": "Object;_eventType",
   }
 };
 
-$$.Rect = {"": "Object;left,top,width>,height>",
+$$.Point = {"": "Object;x>,y>",
   toString$0: function(_) {
-    return "(" + $.S(this.left) + ", " + $.S(this.top) + ", " + $.S(this.width) + ", " + $.S(this.height) + ")";
+    return "(" + $.S(this.x) + ", " + $.S(this.y) + ")";
   },
   $eq: function(_, other) {
     if (other == null)
       return false;
-    if (!(typeof other === "object" && other !== null && !!other.$isRect))
+    if (!(typeof other === "object" && other !== null && !!other.$isPoint))
       return false;
-    return $.$eq(this.left, other.left) === true && $.$eq(this.top, other.top) === true && $.$eq(this.width, other.width) === true && $.$eq(this.height, other.height) === true;
+    return $.$eq(this.x, other.x) === true && $.$eq(this.y, other.y) === true;
+  },
+  $add: function(_, other) {
+    var t1 = $.getInterceptor$x(other);
+    return $.Point$($.$add$ns(this.x, t1.get$x(other)), $.$add$ns(this.y, t1.get$y(other)));
+  },
+  $sub: function(_, other) {
+    var t1 = $.getInterceptor$x(other);
+    return $.Point$($.$sub$n(this.x, t1.get$x(other)), $.$sub$n(this.y, t1.get$y(other)));
+  },
+  $mul: function(_, factor) {
+    return $.Point$($.$mul$n(this.x, factor), $.$mul$n(this.y, factor));
+  },
+  distanceTo$1: function(other) {
+    var dx, dy;
+    dx = $.$sub$n(this.x, other.x);
+    dy = $.$sub$n(this.y, other.y);
+    return Math.sqrt($.checkNum($.$add$ns($.$mul$n(dx, dx), $.$mul$n(dy, dy))));
   },
   round$0: function(_) {
-    return $.Rect$($.round$0$n(this.left), $.round$0$n(this.top), $.round$0$n(this.width), $.round$0$n(this.height));
+    return $.Point$($.round$0$nx(this.x), $.round$0$nx(this.y));
   },
   toInt$0: function(_) {
-    return $.Rect$($.toInt$0$n(this.left), $.toInt$0$n(this.top), $.toInt$0$n(this.width), $.toInt$0$n(this.height));
+    return $.Point$($.toInt$0$nx(this.x), $.toInt$0$nx(this.y));
   },
-  $isRect: true
+  $isPoint: true
+};
+
+$$.Rect = {"": "Object;left>,top>,width>,height>",
+  toString$0: function(_) {
+    return "(" + $.S(this.left) + ", " + $.S(this.top) + ", " + $.S(this.width) + ", " + $.S(this.height) + ")";
+  },
+  $eq: function(_, other) {
+    var t1, t2, t3;
+    if (other == null)
+      return false;
+    if (!(typeof other === "object" && other !== null && other.$isRect()))
+      return false;
+    t1 = this.left;
+    t2 = $.getInterceptor$x(other);
+    t3 = t2.get$left(other);
+    if (t1 == null ? t3 == null : t1 === t3) {
+      t1 = this.top;
+      t3 = t2.get$top(other);
+      t1 = (t1 == null ? t3 == null : t1 === t3) && $.$eq(this.width, t2.get$width(other)) === true && $.$eq(this.height, t2.get$height(other)) === true;
+    } else
+      t1 = false;
+    return t1;
+  },
+  round$0: function(_) {
+    return $.Rect$($.round$0$nx(this.left), $.round$0$nx(this.top), $.round$0$nx(this.width), $.round$0$nx(this.height));
+  },
+  toInt$0: function(_) {
+    return $.Rect$($.toInt$0$nx(this.left), $.toInt$0$nx(this.top), $.toInt$0$nx(this.width), $.toInt$0$nx(this.height));
+  },
+  get$topLeft: function(_) {
+    return $.Point$(this.left, this.top);
+  },
+  $isRect: function() {
+    return true;
+  },
+  $asRect: function() {
+    return null;
+  }
 };
 
 $$._MicrotaskScheduler = {"": "Object;",
@@ -3320,6 +3357,8 @@ $$._SetImmediateScheduler = {"": "_MicrotaskScheduler;_nextMicrotaskFrameSchedul
     return new $.BoundClosure$0(this, "_handleImmediate$0");
   }
 };
+
+$$._DOMWindowCrossFrame = {"": "Object;_window"};
 
 $$.FixedSizeListIterator = {"": "Object;_array,_length,_position,_current",
   moveNext$0: function() {
@@ -3600,7 +3639,7 @@ $$._convertDartToNative_PrepareForStructuredClone_walk_anon = {"": "Closure;box_
   }
 };
 
-$$.SimulationSystem = {"": "Object;canvas>,rng,_width@,_height@,world,renderTime",
+$$.SimulationSystem = {"": "Object;canvas>,rng,_width@,_height@,world,renderTime,line_start_pos,line_end_pos",
   get$width: function(_) {
     return this._width;
   },
@@ -3611,15 +3650,57 @@ $$.SimulationSystem = {"": "Object;canvas>,rng,_width@,_height@,world,renderTime
     $.setImmediate$1$x(window, new $.SimulationSystem_start_anon(this));
   },
   _start$0: function() {
-    var t1, i, circle;
-    this.world = $.VertieWorld$(this.get$width(this), this.get$height(this), 0.95, 0);
-    t1 = $.VertieVector$(0, 0.5);
+    this.world = $.VertieWorld$(this.get$width(this), this.get$height(this), 0.9, 0);
+    var t1 = $.VertieVector$(0, 0.5);
     this.world.gravity = t1;
-    for (i = 0; i < 50; ++i) {
-      circle = $.VertieCircleShape$($.VertiePoint$(this.rng.nextInt$1(this.get$width(this)), this.rng.nextInt$1(this.get$height(this))), 20);
-      this.world.add_circle_shape$1(circle);
-    }
     $.requestAnimationFrame$1$x(window, this.get$draw());
+  },
+  onMouseDown$1: function(_, e) {
+    var t1, pos, t2, circle;
+    t1 = $.getInterceptor$x(e);
+    pos = $.VertiePoint$($.get$x$x(t1.get$offset(e)), $.get$y$x(t1.get$offset(e)));
+    t2 = t1.get$button(e);
+    if (t2 === 0) {
+      circle = $.VertieCircleShape$(pos, 20);
+      this.world.add_circle_shape$1(circle);
+    } else if (t2 === 2)
+      this.line_start_pos = pos;
+    t1.preventDefault$0(e);
+  },
+  get$onMouseDown: function(receiver) {
+    return new $.BoundClosure$i1(this, "onMouseDown$1", receiver);
+  },
+  onMouseUp$1: function(_, e) {
+    var t1, pos, line;
+    t1 = $.getInterceptor$x(e);
+    if (t1.get$button(e) === 2 && this.line_start_pos != null) {
+      pos = $.VertiePoint$($.get$x$x(t1.get$offset(e)), $.get$y$x(t1.get$offset(e)));
+      if (this.line_start_pos.distanceTo$1(pos) > 5) {
+        line = $.VertieLine$(this.line_start_pos, pos);
+        this.world.lines.push(line);
+      }
+    }
+    this.line_start_pos = null;
+    this.line_end_pos = null;
+  },
+  get$onMouseUp: function(receiver) {
+    return new $.BoundClosure$i1(this, "onMouseUp$1", receiver);
+  },
+  onMouseMove$1: function(_, e) {
+    var t1, pos;
+    t1 = $.getInterceptor$x(e);
+    pos = $.VertiePoint$($.get$x$x(t1.get$offset(e)), $.get$y$x(t1.get$offset(e)));
+    if (this.line_start_pos != null)
+      this.line_end_pos = pos;
+  },
+  get$onMouseMove: function(receiver) {
+    return new $.BoundClosure$i1(this, "onMouseMove$1", receiver);
+  },
+  onContextMenu$1: function(_, e) {
+    $.preventDefault$0$x(e);
+  },
+  get$onContextMenu: function(receiver) {
+    return new $.BoundClosure$i1(this, "onContextMenu$1", receiver);
   },
   draw$1: function(_) {
     var time, t1, context;
@@ -3635,6 +3716,8 @@ $$.SimulationSystem = {"": "Object;canvas>,rng,_width@,_height@,world,renderTime
     context = $.get$context2d$x(this.canvas);
     $.clearRect$4$x(context, 0, 0, this.get$width(this), this.get$height(this));
     this.drawCircles$1(context);
+    this.drawPlacingLine$1(context);
+    this.drawStaticLines$1(context);
     t1 = this.world;
     t1.step$0(t1);
     $.requestAnimationFrame$1$x(window, this.get$draw());
@@ -3642,9 +3725,41 @@ $$.SimulationSystem = {"": "Object;canvas>,rng,_width@,_height@,world,renderTime
   get$draw: function() {
     return new $.BoundClosure$1(this, "draw$1");
   },
+  drawPlacingLine$1: function(context) {
+    var t1, t2, t3;
+    if (this.line_start_pos != null && this.line_end_pos != null) {
+      t1 = $.getInterceptor$x(context);
+      t1.set$lineWidth(context, 0.5);
+      t1.set$fillStyle(context, "#00FF00");
+      t1.set$strokeStyle(context, "#00FF00");
+      t1.beginPath$0(context);
+      t2 = this.line_start_pos;
+      t1.moveTo$2(context, t2.x, t2.y);
+      t3 = this.line_end_pos;
+      t1.lineTo$2(context, t3.x, t3.y);
+      t1.closePath$0(context);
+      t1.stroke$0(context);
+    }
+  },
+  drawStaticLines$1: function(context) {
+    var t1, t2, t3, t4;
+    for (t1 = $.JSArray_methods.get$iterator(this.world.lines), t2 = $.getInterceptor$x(context); t1.moveNext$0();) {
+      t3 = t1.get$current();
+      t2.set$lineWidth(context, 0.5);
+      t2.set$fillStyle(context, "#00AA00");
+      t2.set$strokeStyle(context, "#00AA00");
+      t2.beginPath$0(context);
+      t4 = t3.get$A();
+      t2.moveTo$2(context, t4.x, t4.y);
+      t3 = t3.get$B();
+      t2.lineTo$2(context, t3.x, t3.y);
+      t2.closePath$0(context);
+      t2.stroke$0(context);
+    }
+  },
   drawCircles$1: function(context) {
     var t1, t2, t3, t4;
-    for (t1 = $.get$iterator$ax(this.world.circle_shapes), t2 = $.getInterceptor$x(context); t1.moveNext$0();) {
+    for (t1 = $.JSArray_methods.get$iterator(this.world.circle_shapes), t2 = $.getInterceptor$x(context); t1.moveNext$0();) {
       t3 = t1.get$current();
       t2.set$lineWidth(context, 0.5);
       t2.set$fillStyle(context, "#0000FF");
@@ -3658,7 +3773,15 @@ $$.SimulationSystem = {"": "Object;canvas>,rng,_width@,_height@,world,renderTime
     }
   },
   SimulationSystem$1: function(canvas) {
+    var t1;
+    this.line_start_pos = null;
     this.rng = $.Random_Random(null);
+    canvas = this.canvas;
+    t1 = $.getInterceptor$x(canvas);
+    t1.get$onMouseDown(canvas).listen$1(this.get$onMouseDown(this));
+    t1.get$onMouseUp(canvas).listen$1(this.get$onMouseUp(this));
+    t1.get$onContextMenu(canvas).listen$1(this.get$onContextMenu(this));
+    t1.get$onMouseMove(canvas).listen$1(this.get$onMouseMove(this));
   }
 };
 
@@ -3685,21 +3808,116 @@ $$.VertiePoint = {"": "Object;x>,y>",
     return Math.sqrt($.checkNum(this.squaredDistanceTo$1(other)));
   },
   squaredDistanceTo$1: function(other) {
-    var dx, dy;
-    dx = $.$sub$n(this.x, other.x);
-    dy = $.$sub$n(this.y, other.y);
-    return $.$add$ns($.$mul$n(dx, dx), $.$mul$n(dy, dy));
+    var t1, t3, t4, dx, dy;
+    t1 = this.x;
+    if (typeof t1 !== "number")
+      return this.squaredDistanceTo$1$bailout(1, other, t1);
+    t3 = $.getInterceptor$x(other);
+    t4 = t3.get$x(other);
+    if (typeof t4 !== "number")
+      return this.squaredDistanceTo$1$bailout(2, other, t1, t3, t4);
+    dx = t1 - t4;
+    t4 = this.y;
+    if (typeof t4 !== "number")
+      return this.squaredDistanceTo$1$bailout(3, other, 0, t3, t4, dx);
+    t3 = t3.get$y(other);
+    if (typeof t3 !== "number")
+      return this.squaredDistanceTo$1$bailout(4, 0, 0, t3, t4, dx);
+    dy = t4 - t3;
+    return dx * dx + dy * dy;
+  },
+  squaredDistanceTo$1$bailout: function(state0, other, t1, t3, t4, dx) {
+    switch (state0) {
+      case 0:
+        t1 = this.x;
+      case 1:
+        state0 = 0;
+        t3 = $.getInterceptor$x(other);
+        t4 = t3.get$x(other);
+      case 2:
+        state0 = 0;
+        dx = $.$sub$n(t1, t4);
+        t4 = this.y;
+      case 3:
+        state0 = 0;
+        t3 = t3.get$y(other);
+      case 4:
+        var dy;
+        state0 = 0;
+        dy = $.$sub$n(t4, t3);
+        return $.$add$ns($.$mul$n(dx, dx), $.$mul$n(dy, dy));
+    }
+  },
+  nearest$1: function(points) {
+    var nearest_point, min_length, t1, nearest_point0;
+    if (0 >= points.length)
+      throw $.ioore(0);
+    nearest_point = points[0];
+    min_length = this.squaredDistanceTo$1(nearest_point);
+    if (typeof min_length !== "number")
+      return this.nearest$1$bailout(1, min_length, points, nearest_point);
+    for (t1 = $.JSArray_methods.get$iterator(points); t1.moveNext$0();) {
+      nearest_point0 = t1.get$current();
+      if ($.$lt$n(this.squaredDistanceTo$1(nearest_point0), min_length) === true)
+        nearest_point = nearest_point0;
+    }
+    return nearest_point;
+  },
+  nearest$1$bailout: function(state0, min_length, points, nearest_point) {
+    var t1, nearest_point0;
+    for (t1 = $.JSArray_methods.get$iterator(points); t1.moveNext$0();) {
+      nearest_point0 = t1.get$current();
+      if ($.$lt$n(this.squaredDistanceTo$1(nearest_point0), min_length) === true)
+        nearest_point = nearest_point0;
+    }
+    return nearest_point;
   }
 };
 
 $$.VertieVector = {"": "VertiePoint;x,y"};
 
+$$.VertieIntersection = {"": "Object;point,in_segment"};
+
+$$.VertieLine = {"": "Object;A<,B<",
+  intersection_point$1: function(C) {
+    var t1, t2, line_length, u, t3, t4, t5, intersection_x;
+    t1 = this.A;
+    t2 = this.B;
+    line_length = t1.distanceTo$1(t2);
+    u = $.$div$n($.$add$ns($.$mul$n($.$sub$n(C.x, t1.x), $.$sub$n(t2.x, t1.x)), $.$mul$n($.$sub$n(C.y, t1.y), $.$sub$n(t2.y, t1.y))), line_length * line_length);
+    t3 = u < 0 || u > 1;
+    t4 = t1.x;
+    t5 = $.$sub$n(t2.x, t4);
+    if (typeof t5 !== "number")
+      throw $.iae(t5);
+    intersection_x = $.$add$ns(t4, u * t5);
+    t1 = t1.y;
+    t4 = $.$sub$n(t2.y, t1);
+    if (typeof t4 !== "number")
+      throw $.iae(t4);
+    return $.VertieIntersection$($.VertiePoint$(intersection_x, $.$add$ns(t1, u * t4)), !t3);
+  },
+  contact_point$1: function(C) {
+    var vi, p;
+    vi = this.intersection_point$1(C.get$center());
+    p = vi.point;
+    if (!vi.in_segment)
+      p = C.get$center().nearest$1([this.A, this.B]);
+    if (p.distanceTo$1(C.get$center()) > C.get$radius())
+      return;
+    else
+      return p;
+  },
+  VertieLine$2: function(A, B) {
+  }
+};
+
 $$.VertieCircleShape = {"": "Object;radius<,center<,prev_center<,ax@,ay@",
   accelerate$1: function(delta) {
     var t1 = this.center;
-    t1.x = $.$add$ns(t1.x, $.$mul$n(this.ax, delta) * delta);
+    t1.x = $.$add$ns(t1.x, this.ax * delta * delta);
     t1 = this.center;
-    t1.y = $.$add$ns(t1.y, $.$mul$n(this.ay, delta) * delta);
+    t1.y = $.$add$ns(t1.y, this.ay * delta * delta);
     this.ax = 0;
     this.ay = 0;
   },
@@ -3718,7 +3936,7 @@ $$.VertieCircleShape = {"": "Object;radius<,center<,prev_center<,ax@,ay@",
     t2 = $.getInterceptor$n(y);
     $length = Math.sqrt($.checkNum($.$add$ns(t1.$mul(x, x), t2.$mul(y, y))));
     if (t1.$eq(x, 0) !== true) {
-      this.ax = $.$add$ns(this.ax, t1.$div(x, $length) * friction);
+      this.ax = this.ax + t1.$div(x, $length) * friction;
       if (t1.abs$0(x) < 0.04) {
         this.ax = 0;
         t1 = this.center.x;
@@ -3726,7 +3944,7 @@ $$.VertieCircleShape = {"": "Object;radius<,center<,prev_center<,ax@,ay@",
       }
     }
     if (t2.$eq(y, 0) !== true) {
-      this.ay = $.$add$ns(this.ay, t2.$div(y, $length) * friction);
+      this.ay = this.ay + t2.$div(y, $length) * friction;
       if (t2.abs$0(y) < 0.04) {
         this.ay = 0;
         t1 = this.center.y;
@@ -3745,37 +3963,27 @@ $$.VertieCircleShape = {"": "Object;radius<,center<,prev_center<,ax@,ay@",
 
 $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,friction,gravity",
   collide$1: function(preserve_impulse) {
-    var t1, i, t2, shape1, j, j0, shape2, t4, t6, t7, x, y, slength, $length, target, t3, t5, v1x, v1y, t11, t12, v2x, v2y, factor, t15, t16, t18, f1, f2, t8, t10;
-    for (t1 = this.damping, i = 0; i < $.get$length$asx(this.circle_shapes); i = j) {
-      t2 = this.circle_shapes;
-      if (typeof t2 !== "object" || t2 === null || t2.constructor !== Array || !!t2.fixed$length)
-        return this.collide$1$bailout(1, preserve_impulse, t1, t2, i);
-      if (i >= t2.length)
-        throw $.ioore(i);
+    var t1, i, t2, shape1, j, j0, shape2, t3, t5, t6, x, y, slength, $length, target, v1x, v1y, t11, t12, v2x, v2y, factor, t15, t16, t18, f1, f2, t4, t8, t10;
+    for (t1 = this.damping, i = 0; t2 = this.circle_shapes, i < t2.length; i = j) {
       shape1 = t2[i];
-      for (j = i + 1, j0 = j; j0 < $.get$length$asx(this.circle_shapes); ++j0) {
-        t2 = this.circle_shapes;
-        if (typeof t2 !== "object" || t2 === null || t2.constructor !== Array || !!t2.fixed$length)
-          return this.collide$1$bailout(2, preserve_impulse, t1, t2, 0, shape1, j0, j);
-        if (j0 >= t2.length)
-          throw $.ioore(j0);
+      for (j = i + 1, j0 = j; t2 = this.circle_shapes, j0 < t2.length; ++j0) {
         shape2 = t2[j0];
         t2 = shape1.get$center();
-        t4 = t2.x;
-        if (typeof t4 !== "number")
-          return this.collide$1$bailout(3, preserve_impulse, t1, t4, 0, shape1, j0, j, shape2);
-        t6 = shape2.get$center();
-        t7 = t6.x;
-        if (typeof t7 !== "number")
-          return this.collide$1$bailout(4, preserve_impulse, t1, t4, 0, shape1, j0, j, shape2, t7);
-        x = t4 - t7;
+        t3 = t2.x;
+        if (typeof t3 !== "number")
+          return this.collide$1$bailout(1, preserve_impulse, t3, shape1, j0, shape2, t1, j);
+        t5 = shape2.get$center();
+        t6 = t5.x;
+        if (typeof t6 !== "number")
+          return this.collide$1$bailout(2, preserve_impulse, t3, shape1, j0, shape2, t1, j, t6);
+        x = t3 - t6;
         t2 = t2.y;
         if (typeof t2 !== "number")
-          return this.collide$1$bailout(5, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, t2, x);
-        t6 = t6.y;
-        if (typeof t6 !== "number")
-          return this.collide$1$bailout(6, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, t2, x, t6);
-        y = t2 - t6;
+          return this.collide$1$bailout(3, preserve_impulse, 0, shape1, j0, shape2, t1, j, t2, x);
+        t5 = t5.y;
+        if (typeof t5 !== "number")
+          return this.collide$1$bailout(4, preserve_impulse, 0, shape1, j0, shape2, t1, j, t2, x, t5);
+        y = t2 - t5;
         slength = x * x + y * y;
         $length = Math.sqrt($.checkNum(slength));
         target = shape1.get$radius() + shape2.get$radius();
@@ -3783,34 +3991,34 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
           t2 = shape1.get$center();
           t3 = t2.x;
           if (typeof t3 !== "number")
-            return this.collide$1$bailout(7, preserve_impulse, t1, t3, 0, shape1, j0, j, shape2, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length);
+            return this.collide$1$bailout(5, preserve_impulse, t3, shape1, j0, shape2, t1, j, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length);
           t5 = shape1.get$prev_center();
           t6 = t5.x;
           if (typeof t6 !== "number")
-            return this.collide$1$bailout(8, preserve_impulse, t1, t3, 0, shape1, j0, j, shape2, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, t6);
+            return this.collide$1$bailout(6, preserve_impulse, t3, shape1, j0, shape2, t1, j, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, t6);
           v1x = t3 - t6;
           t6 = t2.y;
           if (typeof t6 !== "number")
-            return this.collide$1$bailout(9, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, t6, v1x);
+            return this.collide$1$bailout(7, preserve_impulse, 0, shape1, j0, shape2, t1, j, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, t6, v1x);
           t5 = t5.y;
           if (typeof t5 !== "number")
-            return this.collide$1$bailout(10, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, t6, v1x, t5);
+            return this.collide$1$bailout(8, preserve_impulse, 0, shape1, j0, shape2, t1, j, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, t6, v1x, t5);
           v1y = t6 - t5;
           t5 = shape2.get$center();
           t6 = t5.x;
           if (typeof t6 !== "number")
-            return this.collide$1$bailout(11, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, 0, v1x, t6, v1y);
+            return this.collide$1$bailout(9, preserve_impulse, 0, shape1, j0, shape2, t1, j, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, 0, v1x, t6, v1y);
           t11 = shape2.get$prev_center();
           t12 = t11.x;
           if (typeof t12 !== "number")
-            return this.collide$1$bailout(12, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, 0, v1x, t6, v1y, t12);
+            return this.collide$1$bailout(10, preserve_impulse, 0, shape1, j0, shape2, t1, j, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, 0, v1x, t6, v1y, t12);
           v2x = t6 - t12;
           t5 = t5.y;
           if (typeof t5 !== "number")
-            return this.collide$1$bailout(13, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, 0, v1x, 0, v1y, t5, v2x);
+            return this.collide$1$bailout(11, preserve_impulse, 0, shape1, j0, shape2, t1, j, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, 0, v1x, 0, v1y, t5, v2x);
           t11 = t11.y;
           if (typeof t11 !== "number")
-            return this.collide$1$bailout(14, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, 0, v1x, 0, v1y, t5, v2x, t11);
+            return this.collide$1$bailout(12, preserve_impulse, 0, shape1, j0, shape2, t1, j, $.JSNumber_methods, x, $.JSNumber_methods, target, y, slength, $length, 0, v1x, 0, v1y, t5, v2x, t11);
           v2y = t5 - t11;
           factor = ($length - target) / $length;
           t11 = x * factor * 0.5;
@@ -3818,18 +4026,18 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
           t2 = shape1.get$center();
           t5 = t2.y;
           if (typeof t5 !== "number")
-            return this.collide$1$bailout(16, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, $.JSNumber_methods, x, $.JSNumber_methods, 0, y, slength, 0, 0, v1x, 0, v1y, 0, v2x, t2, factor, v2y, t5);
+            return this.collide$1$bailout(14, preserve_impulse, 0, shape1, j0, shape2, t1, j, $.JSNumber_methods, x, $.JSNumber_methods, 0, y, slength, 0, 0, v1x, 0, v1y, 0, v2x, t2, v2y, factor, t5);
           t15 = y * factor * 0.5;
           t2.y = t5 - t15;
           t2 = shape2.get$center();
           t16 = t2.x;
           if (typeof t16 !== "number")
-            return this.collide$1$bailout(17, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, $.JSNumber_methods, x, $.JSNumber_methods, 0, y, slength, 0, 0, v1x, 0, v1y, 0, v2x, t2, factor, v2y, 0, t16);
+            return this.collide$1$bailout(15, preserve_impulse, 0, shape1, j0, shape2, t1, j, $.JSNumber_methods, x, $.JSNumber_methods, 0, y, slength, 0, 0, v1x, 0, v1y, 0, v2x, t2, v2y, factor, 0, t16);
           t2.x = t16 + t11;
           t2 = shape2.get$center();
           t18 = t2.y;
           if (typeof t18 !== "number")
-            return this.collide$1$bailout(18, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, $.JSNumber_methods, x, $.JSNumber_methods, 0, y, slength, 0, 0, v1x, 0, v1y, 0, v2x, t2, factor, v2y, 0, 0, t18);
+            return this.collide$1$bailout(16, preserve_impulse, 0, shape1, j0, shape2, t1, j, $.JSNumber_methods, x, $.JSNumber_methods, 0, y, slength, 0, 0, v1x, 0, v1y, 0, v2x, t2, v2y, factor, 0, 0, t18);
           t2.y = t18 + t15;
           if (preserve_impulse) {
             f1 = t1 * (x * v1x + y * v1y) / slength;
@@ -3844,42 +4052,40 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
             v2y += t5 - t4;
             t6 = shape1.get$center().x;
             if (typeof t6 !== "number")
-              return this.collide$1$bailout(19, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, 0, 0, 0, 0, 0, 0, 0, 0, v1x, 0, v1y, t6, v2x, 0, 0, v2y);
+              return this.collide$1$bailout(17, preserve_impulse, 0, shape1, j0, shape2, t1, j, 0, 0, 0, 0, 0, 0, 0, 0, v1x, 0, v1y, t6, v2x, 0, v2y);
             shape1.get$prev_center().x = t6 - v1x;
             t8 = shape1.get$center().y;
             if (typeof t8 !== "number")
-              return this.collide$1$bailout(20, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, v1y, t8, v2x, 0, 0, v2y);
+              return this.collide$1$bailout(18, preserve_impulse, 0, shape1, j0, shape2, t1, j, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, v1y, t8, v2x, 0, v2y);
             shape1.get$prev_center().y = t8 - v1y;
             t10 = shape2.get$center().x;
             if (typeof t10 !== "number")
-              return this.collide$1$bailout(21, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, t10, v2x, 0, 0, v2y);
+              return this.collide$1$bailout(19, preserve_impulse, 0, shape1, j0, shape2, t1, j, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, t10, v2x, 0, v2y);
             shape2.get$prev_center().x = t10 - v2x;
             t12 = shape2.get$center().y;
             if (typeof t12 !== "number")
-              return this.collide$1$bailout(22, preserve_impulse, t1, 0, 0, shape1, j0, j, shape2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, t12, 0, 0, 0, v2y);
+              return this.collide$1$bailout(20, preserve_impulse, 0, shape1, j0, shape2, t1, j, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, t12, 0, 0, v2y);
             shape2.get$prev_center().y = t12 - v2y;
           }
         }
       }
     }
   },
-  collide$1$bailout: function(state0, preserve_impulse, t1, t2, i, shape1, j0, j, shape2, t5, x, t7, target, y, slength, $length, t4, v1x, t8, v1y, t10, v2x, t12, factor, v2y, t15, t17, t19) {
+  collide$1$bailout: function(state0, preserve_impulse, t2, shape1, j0, shape2, t1, j, t4, x, t6, target, y, slength, $length, t5, v1x, t8, v1y, t10, v2x, t12, v2y, factor, t15, t17, t19) {
     switch (state0) {
       case 0:
         t1 = this.damping;
         i = 0;
       default:
-        var f1, t3, f2, t6, t9;
+        var i, f1, t3, f2, t7, t9;
         L0:
           while (true)
             switch (state0) {
               case 0:
-                if (!(i < $.get$length$asx(this.circle_shapes)))
-                  break L0;
                 t2 = this.circle_shapes;
-              case 1:
-                state0 = 0;
-                shape1 = $.$index$asx(t2, i);
+                if (!(i < t2.length))
+                  break L0;
+                shape1 = t2[i];
                 j = i + 1;
                 j0 = j;
               default:
@@ -3887,104 +4093,102 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
                   while (true)
                     switch (state0) {
                       case 0:
-                        if (!(j0 < $.get$length$asx(this.circle_shapes)))
-                          break L1;
                         t2 = this.circle_shapes;
+                        if (!(j0 < t2.length))
+                          break L1;
+                        shape2 = t2[j0];
+                        t2 = shape1.get$center().x;
+                      case 1:
+                        state0 = 0;
+                        t4 = shape2.get$center().x;
                       case 2:
                         state0 = 0;
-                        shape2 = $.$index$asx(t2, j0);
-                        t2 = shape1.get$center().x;
+                        x = $.$sub$n(t2, t4);
+                        t4 = shape1.get$center().y;
                       case 3:
                         state0 = 0;
-                        t5 = shape2.get$center().x;
+                        t6 = shape2.get$center().y;
                       case 4:
                         state0 = 0;
-                        x = $.$sub$n(t2, t5);
-                        t5 = shape1.get$center().y;
-                      case 5:
-                        state0 = 0;
-                        t7 = shape2.get$center().y;
-                      case 6:
-                        state0 = 0;
-                        y = $.$sub$n(t5, t7);
-                        t7 = $.getInterceptor$n(x);
-                        t5 = $.getInterceptor$n(y);
-                        slength = $.$add$ns(t7.$mul(x, x), t5.$mul(y, y));
+                        y = $.$sub$n(t4, t6);
+                        t6 = $.getInterceptor$n(x);
+                        t4 = $.getInterceptor$n(y);
+                        slength = $.$add$ns(t6.$mul(x, x), t4.$mul(y, y));
                         $length = Math.sqrt($.checkNum(slength));
                         target = shape1.get$radius() + shape2.get$radius();
                       default:
-                        if (state0 === 22 || state0 === 21 || state0 === 20 || state0 === 19 || state0 === 18 || state0 === 17 || state0 === 16 || state0 === 15 || state0 === 14 || state0 === 13 || state0 === 12 || state0 === 11 || state0 === 10 || state0 === 9 || state0 === 8 || state0 === 7 || state0 === 0 && $length < target)
+                        if (state0 === 20 || state0 === 19 || state0 === 18 || state0 === 17 || state0 === 16 || state0 === 15 || state0 === 14 || state0 === 13 || state0 === 12 || state0 === 11 || state0 === 10 || state0 === 9 || state0 === 8 || state0 === 7 || state0 === 6 || state0 === 5 || state0 === 0 && $length < target)
                           switch (state0) {
                             case 0:
                               t2 = shape1.get$center().x;
+                            case 5:
+                              state0 = 0;
+                              t5 = shape1.get$prev_center().x;
+                            case 6:
+                              state0 = 0;
+                              v1x = $.$sub$n(t2, t5);
+                              t5 = shape1.get$center().y;
                             case 7:
                               state0 = 0;
-                              t4 = shape1.get$prev_center().x;
+                              t8 = shape1.get$prev_center().y;
                             case 8:
                               state0 = 0;
-                              v1x = $.$sub$n(t2, t4);
-                              t4 = shape1.get$center().y;
+                              v1y = $.$sub$n(t5, t8);
+                              t8 = shape2.get$center().x;
                             case 9:
                               state0 = 0;
-                              t8 = shape1.get$prev_center().y;
-                            case 10:
-                              state0 = 0;
-                              v1y = $.$sub$n(t4, t8);
-                              t8 = shape2.get$center().x;
-                            case 11:
-                              state0 = 0;
                               t10 = shape2.get$prev_center().x;
-                            case 12:
+                            case 10:
                               state0 = 0;
                               v2x = $.$sub$n(t8, t10);
                               t10 = shape2.get$center().y;
-                            case 13:
+                            case 11:
                               state0 = 0;
                               t12 = shape2.get$prev_center().y;
-                            case 14:
+                            case 12:
                               state0 = 0;
                               v2y = $.$sub$n(t10, t12);
                               factor = ($length - target) / $length;
                               t12 = shape1.get$center();
                               t10 = t12.x;
-                            case 15:
+                            case 13:
                               state0 = 0;
-                              t12.x = $.$sub$n(t10, $.$mul$n(t7.$mul(x, factor), 0.5));
+                              t12.x = $.$sub$n(t10, $.$mul$n(t6.$mul(x, factor), 0.5));
                               t12 = shape1.get$center();
                               t15 = t12.y;
-                            case 16:
+                            case 14:
                               state0 = 0;
-                              t12.y = $.$sub$n(t15, $.$mul$n(t5.$mul(y, factor), 0.5));
+                              t12.y = $.$sub$n(t15, $.$mul$n(t4.$mul(y, factor), 0.5));
                               t12 = shape2.get$center();
                               t17 = t12.x;
-                            case 17:
+                            case 15:
                               state0 = 0;
-                              t12.x = $.$add$ns(t17, $.$mul$n(t7.$mul(x, factor), 0.5));
+                              t12.x = $.$add$ns(t17, $.$mul$n(t6.$mul(x, factor), 0.5));
                               t12 = shape2.get$center();
                               t19 = t12.y;
-                            case 18:
+                            case 16:
                               state0 = 0;
-                              t12.y = $.$add$ns(t19, $.$mul$n(t5.$mul(y, factor), 0.5));
+                              t12.y = $.$add$ns(t19, $.$mul$n(t4.$mul(y, factor), 0.5));
                             default:
-                              if (state0 === 22 || state0 === 21 || state0 === 20 || state0 === 19 || state0 === 0 && preserve_impulse)
+                              if (state0 === 20 || state0 === 19 || state0 === 18 || state0 === 17 || state0 === 0 && preserve_impulse)
                                 switch (state0) {
                                   case 0:
-                                    t2 = $.$add$ns(t7.$mul(x, v1x), t5.$mul(y, v1y));
+                                    t2 = $.$add$ns(t6.$mul(x, v1x), t4.$mul(y, v1y));
                                     if (typeof t2 !== "number")
                                       throw $.iae(t2);
                                     if (typeof slength !== "number")
                                       throw $.iae(slength);
                                     f1 = t1 * t2 / slength;
-                                    t3 = $.$add$ns(t7.$mul(x, v2x), t5.$mul(y, v2y));
+                                    t3 = $.$add$ns(t6.$mul(x, v2x), t4.$mul(y, v2y));
                                     if (typeof t3 !== "number")
                                       throw $.iae(t3);
                                     f2 = t1 * t3 / slength;
                                     if (typeof x !== "number")
                                       throw $.iae(x);
-                                    t4 = f2 * x;
-                                    t6 = f1 * x;
-                                    v1x = $.$add$ns(v1x, t4 - t6);
-                                    v2x = $.$add$ns(v2x, t6 - t4);
+                                    t5 = f2 * x;
+                                    t7 = f1 * x;
+                                    v1x = $.$add$ns(v1x, t5 - t7);
+                                    v2x = $.$add$ns(v2x, t7 - t5);
                                     if (typeof y !== "number")
                                       throw $.iae(y);
                                     t8 = f2 * y;
@@ -3992,22 +4196,22 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
                                     v1y = $.$add$ns(v1y, t8 - t9);
                                     v2y = $.$add$ns(v2y, t9 - t8);
                                     t10 = shape1.get$center().x;
-                                  case 19:
+                                  case 17:
                                     state0 = 0;
                                     t10 = $.$sub$n(t10, v1x);
                                     shape1.get$prev_center().x = t10;
                                     t10 = shape1.get$center().y;
-                                  case 20:
+                                  case 18:
                                     state0 = 0;
                                     t10 = $.$sub$n(t10, v1y);
                                     shape1.get$prev_center().y = t10;
                                     t10 = shape2.get$center().x;
-                                  case 21:
+                                  case 19:
                                     state0 = 0;
                                     t10 = $.$sub$n(t10, v2x);
                                     shape2.get$prev_center().x = t10;
                                     t10 = shape2.get$center().y;
-                                  case 22:
+                                  case 20:
                                     state0 = 0;
                                     t10 = $.$sub$n(t10, v2y);
                                     shape2.get$prev_center().y = t10;
@@ -4020,10 +4224,10 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
     }
   },
   colide_with_lines$1: function(preserve_impulse) {
-    var t1, t2, t3, t4, t5, contact_point, t6, t7, t8, t10, t11, t13, v1y, t16, x, y, $length, factor, t18, t9, factor_y, t12;
-    for (t1 = $.get$iterator$ax(this.lines), t2 = this.damping; t1.moveNext$0();) {
+    var t1, t2, t3, t4, t5, contact_point, t6, t7, t8, t10, t11, t13, v1y, t16, x, y, $length, factor, t18, t9, factor_y;
+    for (t1 = $.JSArray_methods.get$iterator(this.lines), t2 = this.damping; t1.moveNext$0();) {
       t3 = t1.get$current();
-      for (t4 = $.get$iterator$ax(this.circle_shapes); t4.moveNext$0();) {
+      for (t4 = $.JSArray_methods.get$iterator(this.circle_shapes); t4.moveNext$0();) {
         t5 = t4.get$current();
         contact_point = t3.contact_point$1(t5);
         t6 = $.getInterceptor(contact_point);
@@ -4032,70 +4236,70 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
         t7 = t5.get$center();
         t8 = t7.x;
         if (typeof t8 !== "number")
-          return this.colide_with_lines$1$bailout(1, preserve_impulse, t5, t2, contact_point, t8, t6, t3, t1, t4);
+          return this.colide_with_lines$1$bailout(1, preserve_impulse, t4, t1, t5, contact_point, t2, t8, t6, t3);
         t10 = t5.get$prev_center();
         t11 = t10.x;
         if (typeof t11 !== "number")
-          return this.colide_with_lines$1$bailout(2, preserve_impulse, t5, t2, contact_point, t8, t6, t3, t1, t4, t11);
+          return this.colide_with_lines$1$bailout(2, preserve_impulse, t4, t1, t5, contact_point, t2, t8, t6, t3, t11);
         t13 = t7.y;
         if (typeof t13 !== "number")
-          return this.colide_with_lines$1$bailout(3, preserve_impulse, t5, t2, contact_point, 0, t6, t3, t1, t4, 0, t13);
+          return this.colide_with_lines$1$bailout(3, preserve_impulse, t4, t1, t5, contact_point, t2, 0, t6, t3, 0, t13);
         t10 = t10.y;
         if (typeof t10 !== "number")
-          return this.colide_with_lines$1$bailout(4, preserve_impulse, t5, t2, contact_point, 0, t6, t3, t1, t4, 0, t13, t10);
+          return this.colide_with_lines$1$bailout(4, preserve_impulse, t4, t1, t5, contact_point, t2, 0, t6, t3, 0, t13, t10);
         v1y = (t13 - t10) * t2;
         t16 = t6.get$x(contact_point);
         if (typeof t16 !== "number")
-          return this.colide_with_lines$1$bailout(6, preserve_impulse, t5, t2, contact_point, 0, t6, t3, t1, t4, 0, 0, 0, v1y, t8, t16);
+          return this.colide_with_lines$1$bailout(6, preserve_impulse, t4, t1, t5, contact_point, t2, 0, t6, t3, 0, 0, 0, v1y, t8, t16);
         x = t8 - t16;
         t16 = t6.get$y(contact_point);
         if (typeof t16 !== "number")
-          return this.colide_with_lines$1$bailout(8, preserve_impulse, t5, t2, contact_point, 0, t6, t3, t1, t4, 0, 0, 0, v1y, 0, t13, x, t16);
+          return this.colide_with_lines$1$bailout(8, preserve_impulse, t4, t1, t5, contact_point, t2, 0, t6, t3, 0, 0, 0, v1y, 0, t13, x, t16);
         y = t13 - t16;
         $length = contact_point.distanceTo$1(t7);
         factor = ($length - t5.get$radius()) / $length;
         t7 = t5.get$center();
         t16 = t7.x;
         if (typeof t16 !== "number")
-          return this.colide_with_lines$1$bailout(9, preserve_impulse, t5, t2, contact_point, 0, t6, t3, t1, t4, 0, 0, 0, v1y, 0, t16, x, t7, y, factor);
+          return this.colide_with_lines$1$bailout(9, preserve_impulse, t4, t1, t5, contact_point, t2, 0, t6, t3, 0, 0, 0, v1y, 0, t16, x, t7, y, factor);
         t7.x = t16 - x * factor;
         t7 = t5.get$center();
         t18 = t7.y;
         if (typeof t18 !== "number")
-          return this.colide_with_lines$1$bailout(10, preserve_impulse, t5, t2, contact_point, 0, t6, t3, t1, t4, 0, 0, 0, v1y, 0, 0, x, t7, y, factor, $.JSNumber_methods, t18);
+          return this.colide_with_lines$1$bailout(10, preserve_impulse, t4, t1, t5, contact_point, t2, 0, t6, t3, 0, 0, 0, v1y, 0, 0, x, t7, y, factor, $.JSNumber_methods, t18);
         t7.y = t18 - y * factor;
         if (preserve_impulse) {
           t7 = t5.get$radius();
-          t8 = $.JSNumber_methods.toInt$0(x);
-          t9 = $.JSNumber_methods.toInt$0(y);
+          t8 = $.JSNumber_methods.toInt$0(y);
+          t9 = $.JSNumber_methods.toInt$0(x);
           factor_y = t7 * Math.sin($.checkNum(Math.atan2($.checkNum(t8), $.checkNum(t9))));
           t5.get$radius();
-          $.JSNumber_methods.toInt$0(y);
-          t7 = $.JSNumber_methods.toInt$0(x);
-          Math.cos($.checkNum(Math.atan2($.checkNum(y), $.checkNum(t7))));
-          t10 = t6.get$y(contact_point);
-          if (typeof t10 !== "number")
-            return this.colide_with_lines$1$bailout(11, preserve_impulse, t5, t2, contact_point, 0, t6, t3, t1, t4, 0, 0, 0, v1y, 0, 0, 0, 0, 0, 0, 0, 0, t10, factor_y);
-          t12 = t5.get$center().y;
-          if (typeof t12 !== "number")
-            return this.colide_with_lines$1$bailout(12, preserve_impulse, t5, t2, contact_point, 0, t6, t3, t1, t4, 0, 0, 0, v1y, 0, 0, 0, 0, 0, 0, 0, 0, t10, factor_y, t12);
-          if ($.JSNumber_methods.abs$0(t10 - t12) <= t5.get$radius()) {
+          t7 = $.JSNumber_methods.toInt$0(y);
+          t10 = $.JSNumber_methods.toInt$0(x);
+          Math.cos($.checkNum(Math.atan2($.checkNum(t7), $.checkNum(t10))));
+          t11 = t6.get$y(contact_point);
+          if (typeof t11 !== "number")
+            return this.colide_with_lines$1$bailout(11, preserve_impulse, t4, t1, t5, contact_point, t2, t11, t6, t3, 0, 0, 0, v1y, 0, 0, 0, 0, 0, 0, 0, 0, factor_y);
+          t13 = t5.get$center().y;
+          if (typeof t13 !== "number")
+            return this.colide_with_lines$1$bailout(12, preserve_impulse, t4, t1, t5, contact_point, t2, t11, t6, t3, 0, t13, 0, v1y, 0, 0, 0, 0, 0, 0, 0, 0, factor_y);
+          if ($.JSNumber_methods.abs$0(t11 - t13) <= t5.get$radius()) {
             t6 = t6.get$y(contact_point);
             if (typeof t6 !== "number")
-              return this.colide_with_lines$1$bailout(13, preserve_impulse, t5, t2, 0, 0, t6, t3, t1, t4, 0, 0, 0, v1y, 0, 0, 0, 0, 0, 0, 0, 0, 0, factor_y);
+              return this.colide_with_lines$1$bailout(13, preserve_impulse, t4, t1, t5, 0, t2, 0, t6, t3, 0, 0, 0, v1y, 0, 0, 0, 0, 0, 0, 0, 0, factor_y);
             t5.get$prev_center().y = t6 + factor_y + v1y;
           }
         }
       }
     }
   },
-  colide_with_lines$1$bailout: function(state0, preserve_impulse, t5, t2, contact_point, t7, t6, t3, t1, t4, t9, t11, t13, v1y, t15, t17, x, t19, y, factor, t22, t23, t25, factor_y, t10) {
+  colide_with_lines$1$bailout: function(state0, preserve_impulse, t4, t1, t5, contact_point, t2, t7, t6, t3, t9, t11, t13, v1y, t15, t17, x, t19, y, factor, t22, t23, factor_y) {
     switch (state0) {
       case 0:
-        t1 = $.get$iterator$ax(this.lines);
+        t1 = $.JSArray_methods.get$iterator(this.lines);
         t2 = this.damping;
       default:
-        var $length, t8;
+        var $length, t25, t8;
         L0:
           while (true)
             switch (state0) {
@@ -4103,7 +4307,7 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
                 if (!t1.moveNext$0())
                   break L0;
                 t3 = t1.get$current();
-                t4 = $.get$iterator$ax(this.circle_shapes);
+                t4 = $.JSArray_methods.get$iterator(this.circle_shapes);
               default:
                 L1:
                   while (true)
@@ -4167,21 +4371,21 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
                                 switch (state0) {
                                   case 0:
                                     t7 = t5.get$radius();
-                                    t8 = t22.toInt$0(x);
-                                    t9 = t25.toInt$0(y);
+                                    t8 = t25.toInt$0(y);
+                                    t9 = t22.toInt$0(x);
                                     factor_y = t7 * Math.sin($.checkNum(Math.atan2($.checkNum(t8), $.checkNum(t9))));
                                     t5.get$radius();
-                                    t25.toInt$0(y);
+                                    t25 = t25.toInt$0(y);
                                     t22 = t22.toInt$0(x);
-                                    Math.cos($.checkNum(Math.atan2($.checkNum(y), $.checkNum(t22))));
-                                    t25 = t6.get$y(contact_point);
+                                    Math.cos($.checkNum(Math.atan2($.checkNum(t25), $.checkNum(t22))));
+                                    t7 = t6.get$y(contact_point);
                                   case 11:
                                     state0 = 0;
-                                    t10 = t5.get$center().y;
+                                    t11 = t5.get$center().y;
                                   case 12:
                                     state0 = 0;
                                   case 13:
-                                    if (state0 === 13 || state0 === 0 && $.abs$0$n($.$sub$n(t25, t10)) <= t5.get$radius())
+                                    if (state0 === 13 || state0 === 0 && $.abs$0$n($.$sub$n(t7, t11)) <= t5.get$radius())
                                       switch (state0) {
                                         case 0:
                                           t6 = t6.get$y(contact_point);
@@ -4199,88 +4403,84 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
   },
   border_collide_preserve_impulse$0: function() {
     var t1, t2, t3, radius, t4, x, y, t5, vx, t6, t7, vy, t8;
-    this.width = this.width;
-    this.height = this.height;
-    for (t1 = $.get$iterator$ax(this.circle_shapes), t2 = this.damping; t1.moveNext$0();) {
+    for (t1 = $.JSArray_methods.get$iterator(this.circle_shapes), t2 = this.damping; t1.moveNext$0();) {
       t3 = t1.get$current();
       radius = t3.get$radius();
       t4 = t3.get$center();
       x = t4.x;
       if (typeof x !== "number")
-        return this.border_collide_preserve_impulse$0$bailout(1, t2, t3, radius, x, t4, t1);
+        return this.border_collide_preserve_impulse$0$bailout(1, x, t3, radius, t2, t4, t1);
       y = t4.y;
       if (typeof y !== "number")
-        return this.border_collide_preserve_impulse$0$bailout(2, t2, t3, radius, x, 0, t1, y);
+        return this.border_collide_preserve_impulse$0$bailout(2, x, t3, radius, t2, 0, t1, y);
       if (x - radius < 0) {
         t5 = t3.get$prev_center().x;
         if (typeof t5 !== "number")
-          return this.border_collide_preserve_impulse$0$bailout(3, t2, t3, radius, 0, t5, t1, y);
+          return this.border_collide_preserve_impulse$0$bailout(3, 0, t3, radius, t2, t5, t1, y);
         vx = (t5 - x) * t2;
         t4.x = radius;
         t4 = t3.get$center().x;
         if (typeof t4 !== "number")
-          return this.border_collide_preserve_impulse$0$bailout(5, t2, t3, radius, 0, 0, t1, y, 0, t4, vx);
+          return this.border_collide_preserve_impulse$0$bailout(5, 0, t3, radius, t2, 0, t1, y, 0, t4, vx);
         t3.get$prev_center().x = t4 - vx;
       } else {
         t5 = x + radius;
         t6 = this.width;
         if (typeof t6 !== "number")
-          return this.border_collide_preserve_impulse$0$bailout(6, t2, t3, radius, 0, t5, t1, y, 0, 0, 0, t6);
+          return this.border_collide_preserve_impulse$0$bailout(6, 0, t3, radius, t2, t5, t1, y, 0, 0, 0, t6);
         if (t5 > t6) {
           t5 = t3.get$prev_center().x;
           if (typeof t5 !== "number")
-            return this.border_collide_preserve_impulse$0$bailout(7, t2, t3, radius, 0, t5, t1, y);
+            return this.border_collide_preserve_impulse$0$bailout(7, 0, t3, radius, t2, t5, t1, y);
           vx = (t5 - x) * t2;
           t4.x = t6 - radius;
           t4 = t3.get$center().x;
           if (typeof t4 !== "number")
-            return this.border_collide_preserve_impulse$0$bailout(10, t2, t3, radius, 0, 0, t1, y, 0, t4, vx);
+            return this.border_collide_preserve_impulse$0$bailout(10, 0, t3, radius, t2, 0, t1, y, 0, t4, vx);
           t3.get$prev_center().x = t4 - vx;
         }
       }
       if (y - radius < 0) {
         t4 = t3.get$prev_center().y;
         if (typeof t4 !== "number")
-          return this.border_collide_preserve_impulse$0$bailout(11, t2, t3, radius, 0, t4, t1);
+          return this.border_collide_preserve_impulse$0$bailout(11, 0, t3, radius, t2, t4, t1);
         t6 = t3.get$center();
         t7 = t6.y;
         if (typeof t7 !== "number")
-          return this.border_collide_preserve_impulse$0$bailout(12, t2, t3, radius, 0, t4, t1, 0, t7);
+          return this.border_collide_preserve_impulse$0$bailout(12, 0, t3, radius, t2, t4, t1, 0, t7);
         vy = (t4 - t7) * t2;
         t6.y = radius;
         t6 = t3.get$center().y;
         if (typeof t6 !== "number")
-          return this.border_collide_preserve_impulse$0$bailout(13, t2, t3, 0, 0, 0, t1, 0, 0, t6, 0, 0, vy);
+          return this.border_collide_preserve_impulse$0$bailout(13, 0, t3, 0, t2, 0, t1, 0, 0, t6, 0, 0, vy);
         t3.get$prev_center().y = t6 - vy;
       } else {
         t4 = y + radius;
         t5 = this.height;
         if (typeof t5 !== "number")
-          return this.border_collide_preserve_impulse$0$bailout(14, t2, t3, radius, 0, t4, t1, 0, 0, 0, 0, t5);
+          return this.border_collide_preserve_impulse$0$bailout(14, 0, t3, radius, t2, t4, t1, 0, 0, 0, 0, t5);
         if (t4 > t5) {
           t4 = t3.get$prev_center().y;
           if (typeof t4 !== "number")
-            return this.border_collide_preserve_impulse$0$bailout(15, t2, t3, radius, 0, t4, t1);
+            return this.border_collide_preserve_impulse$0$bailout(15, 0, t3, radius, t2, t4, t1);
           t7 = t3.get$center();
           t8 = t7.y;
           if (typeof t8 !== "number")
-            return this.border_collide_preserve_impulse$0$bailout(16, t2, t3, radius, 0, t4, t1, 0, t8);
+            return this.border_collide_preserve_impulse$0$bailout(16, 0, t3, radius, t2, t4, t1, 0, t8);
           vy = (t4 - t8) * t2;
           t7.y = t5 - radius;
           t7 = t3.get$center().y;
           if (typeof t7 !== "number")
-            return this.border_collide_preserve_impulse$0$bailout(18, t2, t3, 0, 0, 0, t1, 0, 0, t7, 0, 0, vy);
+            return this.border_collide_preserve_impulse$0$bailout(18, 0, t3, 0, t2, 0, t1, 0, 0, t7, 0, 0, vy);
           t3.get$prev_center().y = t7 - vy;
         }
       }
     }
   },
-  border_collide_preserve_impulse$0$bailout: function(state0, t2, t3, radius, x, t4, t1, y, t6, t8, vx, t5, vy) {
+  border_collide_preserve_impulse$0$bailout: function(state0, x, t3, radius, t2, t4, t1, y, t6, t8, vx, t5, vy) {
     switch (state0) {
       case 0:
-        this.width = this.width;
-        this.height = this.height;
-        t1 = $.get$iterator$ax(this.circle_shapes);
+        t1 = $.JSArray_methods.get$iterator(this.circle_shapes);
         t2 = this.damping;
       default:
         L0:
@@ -4407,25 +4607,23 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
   },
   border_collide$0: function() {
     var t1, t2, radius, t3, x, y, t4, t5;
-    this.width = this.width;
-    this.height = this.height;
-    for (t1 = $.get$iterator$ax(this.circle_shapes); t1.moveNext$0();) {
+    for (t1 = $.JSArray_methods.get$iterator(this.circle_shapes); t1.moveNext$0();) {
       t2 = t1.get$current();
       radius = t2.get$radius();
       t3 = t2.get$center();
       x = t3.x;
       if (typeof x !== "number")
-        return this.border_collide$0$bailout(1, t2, radius, x, t3, t1);
+        return this.border_collide$0$bailout(1, x, t2, radius, t3, t1);
       y = t3.y;
       if (typeof y !== "number")
-        return this.border_collide$0$bailout(2, t2, radius, x, 0, t1, y);
+        return this.border_collide$0$bailout(2, x, t2, radius, 0, t1, y);
       if (x - radius < 0)
         t3.x = radius;
       else {
         t4 = x + radius;
         t5 = this.width;
         if (typeof t5 !== "number")
-          return this.border_collide$0$bailout(3, t2, radius, 0, t4, t1, y, t5);
+          return this.border_collide$0$bailout(3, 0, t2, radius, t4, t1, y, t5);
         if (t4 > t5)
           t3.x = t5 - radius;
       }
@@ -4435,18 +4633,16 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
         t3 = y + radius;
         t4 = this.height;
         if (typeof t4 !== "number")
-          return this.border_collide$0$bailout(5, t2, radius, 0, t3, t1, 0, t4);
+          return this.border_collide$0$bailout(5, 0, t2, radius, t3, t1, 0, t4);
         if (t3 > t4)
           t2.get$center().y = t4 - radius;
       }
     }
   },
-  border_collide$0$bailout: function(state0, t2, radius, x, t3, t1, y, t4) {
+  border_collide$0$bailout: function(state0, x, t2, radius, t3, t1, y, t4) {
     switch (state0) {
       case 0:
-        this.width = this.width;
-        this.height = this.height;
-        t1 = $.get$iterator$ax(this.circle_shapes);
+        t1 = $.JSArray_methods.get$iterator(this.circle_shapes);
       default:
         L0:
           while (true)
@@ -4512,83 +4708,50 @@ $$.VertieWorld = {"": "Object;circle_shapes,lines,width>,height>,damping,frictio
     }
   },
   apply_gravity$0: function() {
-    var t1, t2, t3, t5, t7, t9;
-    for (t1 = $.get$iterator$ax(this.circle_shapes); t1.moveNext$0();) {
+    var t1, t2, t3, t4, t5, t6;
+    for (t1 = $.JSArray_methods.get$iterator(this.circle_shapes); t1.moveNext$0();) {
       t2 = t1.get$current();
       t3 = t2.get$ay();
-      if (typeof t3 !== "number")
-        return this.apply_gravity$0$bailout(1, t2, t3, t1);
-      t5 = this.gravity.y;
-      if (typeof t5 !== "number")
-        return this.apply_gravity$0$bailout(2, t2, t3, t1, t5);
-      t2.set$ay(t3 + t5);
-      t7 = t2.get$ax();
-      if (typeof t7 !== "number")
-        return this.apply_gravity$0$bailout(3, t2, 0, t1, 0, t7);
-      t9 = this.gravity.x;
-      if (typeof t9 !== "number")
-        return this.apply_gravity$0$bailout(4, t2, 0, t1, 0, t7, t9);
-      t2.set$ax(t7 + t9);
-    }
-  },
-  apply_gravity$0$bailout: function(state0, t2, t3, t1, t5, t7, t9) {
-    switch (state0) {
-      case 0:
-        t1 = $.get$iterator$ax(this.circle_shapes);
-      default:
-        L0:
-          while (true)
-            switch (state0) {
-              case 0:
-                if (!t1.moveNext$0())
-                  break L0;
-                t2 = t1.get$current();
-                t3 = t2.get$ay();
-              case 1:
-                state0 = 0;
-                t5 = this.gravity.y;
-              case 2:
-                state0 = 0;
-                t2.set$ay($.$add$ns(t3, t5));
-                t7 = t2.get$ax();
-              case 3:
-                state0 = 0;
-                t9 = this.gravity.x;
-              case 4:
-                state0 = 0;
-                t2.set$ax($.$add$ns(t7, t9));
-            }
+      t4 = this.gravity.y;
+      if (typeof t4 !== "number")
+        throw $.iae(t4);
+      t2.set$ay(t3 + t4);
+      t5 = t2.get$ax();
+      t6 = this.gravity.x;
+      if (typeof t6 !== "number")
+        throw $.iae(t6);
+      t2.set$ax(t5 + t6);
     }
   },
   inertia$0: function() {
-    for (var t1 = $.get$iterator$ax(this.circle_shapes); t1.moveNext$0();)
+    for (var t1 = $.JSArray_methods.get$iterator(this.circle_shapes); t1.moveNext$0();)
       t1.get$current().inertia$0();
   },
   accelerate$1: function(delta) {
     var t1;
-    for (t1 = $.get$iterator$ax(this.circle_shapes); t1.moveNext$0();)
+    for (t1 = $.JSArray_methods.get$iterator(this.circle_shapes); t1.moveNext$0();)
       t1.get$current().accelerate$1(delta);
   },
   step$0: function(_) {
     var t1, t2, i, t3;
-    for (t1 = this.friction, t2 = t1 !== 0, i = 0; i < 2; ++i) {
+    for (t1 = this.friction, t2 = t1 !== 0, i = 0; i < 5; ++i) {
       if (t2)
-        for (t3 = $.get$iterator$ax(this.circle_shapes); t3.moveNext$0();)
+        for (t3 = $.JSArray_methods.get$iterator(this.circle_shapes); t3.moveNext$0();)
           t3.get$current().apply_friction$1(t1);
       this.apply_gravity$0();
-      for (t3 = $.get$iterator$ax(this.circle_shapes); t3.moveNext$0();)
-        t3.get$current().accelerate$1(0.5);
+      for (t3 = $.JSArray_methods.get$iterator(this.circle_shapes); t3.moveNext$0();)
+        t3.get$current().accelerate$1(0.2);
       this.colide_with_lines$1(true);
       this.collide$1(false);
       this.border_collide$0();
-      for (t3 = $.get$iterator$ax(this.circle_shapes); t3.moveNext$0();)
+      for (t3 = $.JSArray_methods.get$iterator(this.circle_shapes); t3.moveNext$0();)
         t3.get$current().inertia$0();
       this.collide$1(true);
       this.border_collide_preserve_impulse$0();
     }
   },
   add_circle_shape$1: function(shape) {
-    $.add$1$ax(this.circle_shapes, shape);
+    this.circle_shapes.push(shape);
   },
   VertieWorld$4: function(width, height, damping, friction) {
     this.circle_shapes = [];
@@ -4619,6 +4782,12 @@ $$.BoundClosure$2 = {"": "Closure;self,target",
 $$.BoundClosure$0 = {"": "Closure;self,target",
   call$0: function() {
     return this.self[this.target]();
+  }
+};
+
+$$.BoundClosure$i1 = {"": "Closure;self,target,receiver",
+  call$1: function(p0) {
+    return this.self[this.target](this.receiver, p0);
   }
 };
 
@@ -5446,7 +5615,7 @@ $.dynamicBind = function(obj, $name, methods, $arguments) {
   } else
     method = null;
   if (method == null)
-    method = $.lookupDynamicClass(hasOwnPropertyFunction, methods, $.getTypeNameOf($.CONSTANT8));
+    method = $.lookupDynamicClass(hasOwnPropertyFunction, methods, $.getTypeNameOf($.CONSTANT12));
   if (method == null)
     (function(){throw new TypeError($name + " is not a function");})();
   else {
@@ -5486,7 +5655,7 @@ $.dynamicFunction = function($name) {
   if (f != null && !!f.methods)
     return f.methods;
   methods = {};
-  dartMethod = Object.getPrototypeOf($.CONSTANT8)[$name];
+  dartMethod = Object.getPrototypeOf($.CONSTANT12)[$name];
   if (dartMethod != null)
     methods["Object"] = dartMethod;
   bind = function() {return $.dynamicBind.call$4(this, $name, methods, Array.prototype.slice.call(arguments));};
@@ -5857,6 +6026,10 @@ $._EventStreamSubscription$ = function(_target, _eventType, _onData, _useCapture
   return t1;
 };
 
+$.Point$ = function(x, y) {
+  return new $.Point(x, y);
+};
+
 $.Rect$ = function(left, $top, width, height) {
   return new $.Rect(left, $top, width, height);
 };
@@ -5905,6 +6078,24 @@ $._completeMicrotasks = function() {
   $._pendingMicrotasks = null;
   for (t1 = $.get$iterator$ax(callbacks); t1.moveNext$0();)
     t1.get$current().call$0();
+};
+
+$._convertNativeToDart_EventTarget = function(e) {
+  if ("setInterval" in e)
+    return $._DOMWindowCrossFrame__createSafe(e);
+  else
+    return e;
+};
+
+$._DOMWindowCrossFrame$ = function(_window) {
+  return new $._DOMWindowCrossFrame(_window);
+};
+
+$._DOMWindowCrossFrame__createSafe = function(w) {
+  if (w === window)
+    return w;
+  else
+    return $._DOMWindowCrossFrame$(w);
 };
 
 $.FixedSizeListIterator$ = function(array) {
@@ -5974,7 +6165,7 @@ $._Isolate_port = function() {
 };
 
 $.Random_Random = function(seed) {
-  return $.CONSTANT7;
+  return $.CONSTANT11;
 };
 
 $.main = function() {
@@ -5990,12 +6181,12 @@ $.showFps = function(fps) {
   if (typeof t1 !== "number")
     throw $.iae(t1);
   $.fpsAverage = fps * 0.05 + t1;
-  t2 = $.S($.toInt$0$n($.round$0$n($.fpsAverage))) + " fps";
+  t2 = $.S($.toInt$0$nx($.round$0$nx($.fpsAverage))) + " fps";
   $.getInterceptor$x($.query$1$x(document, "#notes")).textContent = t2;
 };
 
 $.SimulationSystem$ = function(canvas) {
-  var t1 = new $.SimulationSystem(canvas, null, null, null, null, null);
+  var t1 = new $.SimulationSystem(canvas, null, null, null, null, null, null, null);
   t1.SimulationSystem$1(canvas);
   return t1;
 };
@@ -6006,6 +6197,16 @@ $.VertiePoint$ = function(x, y) {
 
 $.VertieVector$ = function(x, y) {
   return new $.VertieVector(x, y);
+};
+
+$.VertieIntersection$ = function(point, in_segment) {
+  return new $.VertieIntersection(point, in_segment);
+};
+
+$.VertieLine$ = function(A, B) {
+  var t1 = new $.VertieLine(A, B);
+  t1.VertieLine$2(A, B);
+  return t1;
 };
 
 $.VertieCircleShape$ = function(center, radius) {
@@ -6057,18 +6258,22 @@ Isolate.makeConstantList = function(list) {
   return list;
 };
 $.CONSTANT4 = Isolate.makeConstantList([]);
-$.CONSTANT8 = new $.Object();
+$.CONSTANT12 = new $.Object();
 $.CONSTANT = new $.NullThrownError();
 $.JSDouble_methods = $.JSDouble.prototype;
-$.CONSTANT7 = new $._Random();
+$.CONSTANT11 = new $._Random();
+$.CONSTANT10 = new $.EventStreamProvider("mousedown");
 $.CONSTANT3 = new $._LinkedHashTableHeadMarker();
 $.JSNull_methods = $.JSNull.prototype;
 $.JSNumber_methods = $.JSNumber.prototype;
 $.JSString_methods = $.JSString.prototype;
+$.CONSTANT9 = new $.EventStreamProvider("mouseup");
 $.CONSTANT0 = new $.EventStreamProvider("message");
 $.CONSTANT6 = new $.CloseToken();
 $.JSInt_methods = $.JSInt.prototype;
+$.CONSTANT8 = new $.EventStreamProvider("contextmenu");
 $.JSArray_methods = $.JSArray.prototype;
+$.CONSTANT7 = new $.EventStreamProvider("mousemove");
 $.CONSTANT5 = new $.Duration(0);
 $.CONSTANT1 = new $._DeadEntry();
 $.CONSTANT2 = new $._NullKey();
@@ -6094,6 +6299,11 @@ $.$and$n = function(receiver, a0) {
   if (typeof receiver == "number" && typeof a0 == "number")
     return (receiver & a0) >>> 0;
   return $.getInterceptor$n(receiver).$and(receiver, a0);
+};
+$.$div$n = function(receiver, a0) {
+  if (typeof receiver == "number" && typeof a0 == "number")
+    return receiver / a0;
+  return $.getInterceptor$n(receiver).$div(receiver, a0);
 };
 $.$eq = function(receiver, a0) {
   if (receiver == null)
@@ -6183,6 +6393,18 @@ $.get$length$asx = function(receiver) {
 $.get$onMessage$x = function(receiver) {
   return $.getInterceptor$x(receiver).get$onMessage(receiver);
 };
+$.get$topLeft$x = function(receiver) {
+  return $.getInterceptor$x(receiver).get$topLeft(receiver);
+};
+$.get$x$x = function(receiver) {
+  return $.getInterceptor$x(receiver).get$x(receiver);
+};
+$.get$y$x = function(receiver) {
+  return $.getInterceptor$x(receiver).get$y(receiver);
+};
+$.getBoundingClientRect$0$x = function(receiver) {
+  return $.getInterceptor$x(receiver).getBoundingClientRect$0(receiver);
+};
 $.observe$2$attributes$x = function(receiver, a0, a1) {
   return $.getInterceptor$x(receiver).observe$2$attributes(receiver, a0, a1);
 };
@@ -6192,14 +6414,17 @@ $.postMessage$1$x = function(receiver, a0) {
 $.postMessage$2$x = function(receiver, a0, a1) {
   return $.getInterceptor$x(receiver).postMessage$2(receiver, a0, a1);
 };
+$.preventDefault$0$x = function(receiver) {
+  return $.getInterceptor$x(receiver).preventDefault$0(receiver);
+};
 $.query$1$x = function(receiver, a0) {
   return $.getInterceptor$x(receiver).query$1(receiver, a0);
 };
 $.requestAnimationFrame$1$x = function(receiver, a0) {
   return $.getInterceptor$x(receiver).requestAnimationFrame$1(receiver, a0);
 };
-$.round$0$n = function(receiver) {
-  return $.getInterceptor$n(receiver).round$0(receiver);
+$.round$0$nx = function(receiver) {
+  return $.getInterceptor$nx(receiver).round$0(receiver);
 };
 $.set$height$x = function(receiver, value) {
   return $.getInterceptor$x(receiver).set$height(receiver, value);
@@ -6213,8 +6438,8 @@ $.setImmediate$1$x = function(receiver, a0) {
 $.sublist$1$ax = function(receiver, a0) {
   return $.getInterceptor$ax(receiver).sublist$1(receiver, a0);
 };
-$.toInt$0$n = function(receiver) {
-  return $.getInterceptor$n(receiver).toInt$0(receiver);
+$.toInt$0$nx = function(receiver) {
+  return $.getInterceptor$nx(receiver).toInt$0(receiver);
 };
 $.toString$0 = function(receiver) {
   return $.getInterceptor(receiver).toString$0(receiver);
@@ -6265,6 +6490,13 @@ $.getInterceptor$ns = function(receiver) {
     return $.JSNumber.prototype;
   if (typeof receiver == "string")
     return $.JSString.prototype;
+  if (receiver == null)
+    return void 0;
+  return receiver;
+};
+$.getInterceptor$nx = function(receiver) {
+  if (typeof receiver == "number")
+    return $.JSNumber.prototype;
   if (receiver == null)
     return void 0;
   return receiver;
@@ -6345,6 +6577,18 @@ $.$defineNativeClass = function(cls, desc) {
     return false;
   },
   $asArrayBufferView: function() {
+    return null;
+  },
+  $isElement: function() {
+    return false;
+  },
+  $asElement: function() {
+    return null;
+  },
+  $isRect: function() {
+    return false;
+  },
+  $asRect: function() {
     return null;
   },
   toString$0: function(_) {
@@ -6441,6 +6685,12 @@ $.$defineNativeClass("CanvasRenderingContext2D", {"": "fillStyle},lineWidth},str
   fill$0: function($receiver) {
     return $receiver.fill();
   },
+  lineTo$2: function(receiver, x, y) {
+    return receiver.lineTo(x,y);
+  },
+  moveTo$2: function(receiver, x, y) {
+    return receiver.moveTo(x,y);
+  },
   stroke$0: function(receiver) {
     return receiver.stroke();
   },
@@ -6485,10 +6735,43 @@ $.$defineNativeClass("DOMException", {
 $.$defineNativeClass("Element", {"": "id=",
   get$client: function(receiver) {
     return $.Rect$(this.clientLeft, this.clientTop, this.clientWidth, this.clientHeight);
+  },
+  get$offset: function(receiver) {
+    return $.Rect$(this.offsetLeft, this.offsetTop, this.offsetWidth, this.offsetHeight);
+  },
+  getBoundingClientRect$0: function(receiver) {
+    return receiver.getBoundingClientRect();
+  },
+  get$onContextMenu: function(receiver) {
+    return $.CONSTANT8.forTarget$1(receiver);
+  },
+  get$onMouseDown: function(receiver) {
+    return $.CONSTANT10.forTarget$1(receiver);
+  },
+  get$onMouseMove: function(receiver) {
+    return $.CONSTANT7.forTarget$1(receiver);
+  },
+  get$onMouseUp: function(receiver) {
+    return $.CONSTANT9.forTarget$1(receiver);
+  },
+  $isElement: function() {
+    return true;
+  },
+  $asElement: function() {
+    return null;
   }
 });
 
 $.$defineNativeClass("HTMLEmbedElement", {"": "height%,width%"});
+
+$.$defineNativeClass("Event", {
+  get$target: function(receiver) {
+    return $._convertNativeToDart_EventTarget(this.target);
+  },
+  preventDefault$0: function(receiver) {
+    return receiver.preventDefault();
+  }
+});
 
 $.$defineNativeClass("EventException", {
   toString$0: function(receiver) {
@@ -6579,9 +6862,35 @@ $.$defineNativeClass("HTMLIFrameElement", {"": "height%,width%"});
 
 $.$defineNativeClass("HTMLImageElement", {"": "height%,width%,x=,y="});
 
-$.$defineNativeClass("HTMLInputElement", {"": "height%,width%"});
+$.$defineNativeClass("HTMLInputElement", {"": "height%,width%",
+  $isElement: function() {
+    return true;
+  },
+  $asElement: function() {
+    return null;
+  }
+});
 
 $.$defineNativeClass("HTMLMediaElement", {"": "error="});
+
+$.$defineNativeClass("MouseEvent", {"": "button=",
+  get$client: function(receiver) {
+    return $.Point$(this.clientX, this.clientY);
+  },
+  get$offset: function(receiver) {
+    var target, t1;
+    if (!!receiver.offsetX)
+      return $.Point$(receiver.offsetX, receiver.offsetY);
+    else {
+      target = this.get$target(receiver);
+      if (!(typeof target === "object" && target !== null && target.$isElement()))
+        throw $.$$throw($.UnsupportedError$("offsetX is only supported on elements"));
+      t1 = this.get$client(receiver);
+      t1 = t1.$sub(t1, $.get$topLeft$x($.getBoundingClientRect$0$x(this.get$target(receiver))));
+      return t1.toInt$0(t1);
+    }
+  }
+});
 
 $.$defineNativeClass("MutationObserver", {
   observe$8$attributeFilter$attributeOldValue$attributes$characterData$characterDataOldValue$childList$subtree: function(receiver, target, attributeFilter, attributeOldValue, attributes, characterData, characterDataOldValue, childList, subtree) {
@@ -6886,6 +7195,55 @@ $.$defineNativeClass("XPathException", {
   }
 });
 
+$.$defineNativeClass("ClientRect", {"": "height=,left=,top=,width=",
+  toString$0: function(receiver) {
+    return "(" + $.S(this.left) + ", " + $.S(this.top) + ", " + $.S(this.width) + ", " + $.S(this.height) + ")";
+  },
+  $eq: function(receiver, other) {
+    var t1, t2, t3;
+    if (other == null)
+      return false;
+    if (!(typeof other === "object" && other !== null && other.$isRect()))
+      return false;
+    t1 = this.left;
+    t2 = $.getInterceptor$x(other);
+    t3 = t2.get$left(other);
+    if (t1 == null ? t3 == null : t1 === t3) {
+      t1 = this.top;
+      t3 = t2.get$top(other);
+      if (t1 == null ? t3 == null : t1 === t3) {
+        t1 = this.width;
+        t3 = t2.get$width(other);
+        if (t1 == null ? t3 == null : t1 === t3) {
+          t1 = this.height;
+          t2 = t2.get$height(other);
+          t2 = t1 == null ? t2 == null : t1 === t2;
+          t1 = t2;
+        } else
+          t1 = false;
+      } else
+        t1 = false;
+    } else
+      t1 = false;
+    return t1;
+  },
+  round$0: function(receiver) {
+    return $.Rect$($.round$0$nx(this.left), $.round$0$nx(this.top), $.round$0$nx(this.width), $.round$0$nx(this.height));
+  },
+  toInt$0: function(receiver) {
+    return $.Rect$($.toInt$0$nx(this.left), $.toInt$0$nx(this.top), $.toInt$0$nx(this.width), $.toInt$0$nx(this.height));
+  },
+  get$topLeft: function(receiver) {
+    return $.Point$(this.left, this.top);
+  },
+  $isRect: function() {
+    return true;
+  },
+  $asRect: function() {
+    return null;
+  }
+});
+
 $.$defineNativeClass("NamedNodeMap", {
   get$length: function(receiver) {
     return receiver.length;
@@ -7014,12 +7372,12 @@ $.$defineNativeClass("SVGFEDropShadowElement", {"": "height=,width=,x=,y="});
 
 $.$defineNativeClass("SVGGlyphRefElement", {"": "x=,y="});
 
-// 68 dynamic classes.
-// 198 classes
-// 20 !leaf
+// 71 dynamic classes.
+// 240 classes
+// 24 !leaf
 (function() {
-  var v0_Uint8Array = "Uint8Array|Uint8ClampedArray", v1_TextPositioningElement = "SVGAltGlyphElement|SVGTRefElement|SVGTSpanElement|SVGTextElement|SVGTextPositioningElement", v2_MediaElement = "HTMLAudioElement|HTMLMediaElement|HTMLVideoElement", v3_SvgElement = [v1_TextPositioningElement, "SVGAElement|SVGAltGlyphDefElement|SVGAltGlyphItemElement|SVGAnimateColorElement|SVGAnimateElement|SVGAnimateMotionElement|SVGAnimateTransformElement|SVGAnimationElement|SVGCircleElement|SVGClipPathElement|SVGComponentTransferFunctionElement|SVGCursorElement|SVGDefsElement|SVGDescElement|SVGElement|SVGEllipseElement|SVGFEBlendElement|SVGFEColorMatrixElement|SVGFEComponentTransferElement|SVGFECompositeElement|SVGFEConvolveMatrixElement|SVGFEDiffuseLightingElement|SVGFEDisplacementMapElement|SVGFEDistantLightElement|SVGFEDropShadowElement|SVGFEFloodElement|SVGFEFuncAElement|SVGFEFuncBElement|SVGFEFuncGElement|SVGFEFuncRElement|SVGFEGaussianBlurElement|SVGFEImageElement|SVGFEMergeElement|SVGFEMergeNodeElement|SVGFEMorphologyElement|SVGFEOffsetElement|SVGFEPointLightElement|SVGFESpecularLightingElement|SVGFESpotLightElement|SVGFETileElement|SVGFETurbulenceElement|SVGFilterElement|SVGFontElement|SVGFontFaceElement|SVGFontFaceFormatElement|SVGFontFaceNameElement|SVGFontFaceSrcElement|SVGFontFaceUriElement|SVGForeignObjectElement|SVGGElement|SVGGlyphElement|SVGGlyphRefElement|SVGGradientElement|SVGHKernElement|SVGImageElement|SVGLineElement|SVGLinearGradientElement|SVGMPathElement|SVGMarkerElement|SVGMaskElement|SVGMetadataElement|SVGMissingGlyphElement|SVGPathElement|SVGPatternElement|SVGPolygonElement|SVGPolylineElement|SVGRadialGradientElement|SVGRectElement|SVGSVGElement|SVGScriptElement|SVGSetElement|SVGStopElement|SVGStyleElement|SVGStyledElement|SVGSwitchElement|SVGSymbolElement|SVGTextContentElement|SVGTextPathElement|SVGTitleElement|SVGUseElement|SVGVKernElement|SVGViewElement"].join("|"), v4_Element = [v2_MediaElement, v3_SvgElement, "Element|HTMLAnchorElement|HTMLAppletElement|HTMLAreaElement|HTMLBRElement|HTMLBaseElement|HTMLBaseFontElement|HTMLBodyElement|HTMLButtonElement|HTMLCanvasElement|HTMLContentElement|HTMLDListElement|HTMLDataListElement|HTMLDetailsElement|HTMLDirectoryElement|HTMLDivElement|HTMLElement|HTMLEmbedElement|HTMLFieldSetElement|HTMLFontElement|HTMLFormElement|HTMLFrameElement|HTMLFrameSetElement|HTMLHRElement|HTMLHeadElement|HTMLHeadingElement|HTMLHtmlElement|HTMLIFrameElement|HTMLImageElement|HTMLInputElement|HTMLKeygenElement|HTMLLIElement|HTMLLabelElement|HTMLLegendElement|HTMLLinkElement|HTMLMapElement|HTMLMarqueeElement|HTMLMenuElement|HTMLMetaElement|HTMLMeterElement|HTMLModElement|HTMLOListElement|HTMLObjectElement|HTMLOptGroupElement|HTMLOptionElement|HTMLOutputElement|HTMLParagraphElement|HTMLParamElement|HTMLPreElement|HTMLProgressElement|HTMLQuoteElement|HTMLScriptElement|HTMLSelectElement|HTMLShadowElement|HTMLSourceElement|HTMLSpanElement|HTMLStyleElement|HTMLTableCaptionElement|HTMLTableCellElement|HTMLTableColElement|HTMLTableElement|HTMLTableRowElement|HTMLTableSectionElement|HTMLTextAreaElement|HTMLTitleElement|HTMLTrackElement|HTMLUListElement|HTMLUnknownElement"].join("|"), v5_CharacterData = "CDATASection|CharacterData|Comment|Text", v6_Document = "Document|HTMLDocument|SVGDocument", v7_Node = [v4_Element, v5_CharacterData, v6_Document, "Attr|DocumentFragment|DocumentType|EntityReference|Node|Notation|ProcessingInstruction|ShadowRoot"].join("|");
-  $.dynamicSetMetadata([["Uint8Array", v0_Uint8Array], ["ArrayBufferView", [v0_Uint8Array, "ArrayBufferView"].join("|")], ["CanvasRenderingContext", "CanvasRenderingContext|CanvasRenderingContext2D|WebGLRenderingContext"], ["CharacterData", v5_CharacterData], ["Document", v6_Document], ["HTMLMediaElement", v2_MediaElement], ["SVGTextPositioningElement", v1_TextPositioningElement], ["SVGElement", v3_SvgElement], ["Element", v4_Element], ["Node", v7_Node], ["EventTarget", [v7_Node, "DOMWindow|EventTarget"].join("|")], ["HTMLCollection", "HTMLCollection|HTMLFormControlsCollection|HTMLOptionsCollection"], ["NodeList", "NodeList|RadioNodeList"]]);
+  var v0_Uint8Array = "Uint8Array|Uint8ClampedArray", v1_TextPositioningElement = "SVGAltGlyphElement|SVGTRefElement|SVGTSpanElement|SVGTextElement|SVGTextPositioningElement", v2_MediaElement = "HTMLAudioElement|HTMLMediaElement|HTMLVideoElement", v3_SvgElement = [v1_TextPositioningElement, "SVGAElement|SVGAltGlyphDefElement|SVGAltGlyphItemElement|SVGAnimateColorElement|SVGAnimateElement|SVGAnimateMotionElement|SVGAnimateTransformElement|SVGAnimationElement|SVGCircleElement|SVGClipPathElement|SVGComponentTransferFunctionElement|SVGCursorElement|SVGDefsElement|SVGDescElement|SVGElement|SVGEllipseElement|SVGFEBlendElement|SVGFEColorMatrixElement|SVGFEComponentTransferElement|SVGFECompositeElement|SVGFEConvolveMatrixElement|SVGFEDiffuseLightingElement|SVGFEDisplacementMapElement|SVGFEDistantLightElement|SVGFEDropShadowElement|SVGFEFloodElement|SVGFEFuncAElement|SVGFEFuncBElement|SVGFEFuncGElement|SVGFEFuncRElement|SVGFEGaussianBlurElement|SVGFEImageElement|SVGFEMergeElement|SVGFEMergeNodeElement|SVGFEMorphologyElement|SVGFEOffsetElement|SVGFEPointLightElement|SVGFESpecularLightingElement|SVGFESpotLightElement|SVGFETileElement|SVGFETurbulenceElement|SVGFilterElement|SVGFontElement|SVGFontFaceElement|SVGFontFaceFormatElement|SVGFontFaceNameElement|SVGFontFaceSrcElement|SVGFontFaceUriElement|SVGForeignObjectElement|SVGGElement|SVGGlyphElement|SVGGlyphRefElement|SVGGradientElement|SVGHKernElement|SVGImageElement|SVGLineElement|SVGLinearGradientElement|SVGMPathElement|SVGMarkerElement|SVGMaskElement|SVGMetadataElement|SVGMissingGlyphElement|SVGPathElement|SVGPatternElement|SVGPolygonElement|SVGPolylineElement|SVGRadialGradientElement|SVGRectElement|SVGSVGElement|SVGScriptElement|SVGSetElement|SVGStopElement|SVGStyleElement|SVGStyledElement|SVGSwitchElement|SVGSymbolElement|SVGTextContentElement|SVGTextPathElement|SVGTitleElement|SVGUseElement|SVGVKernElement|SVGViewElement"].join("|"), v4_MouseEvent = "MouseEvent|WheelEvent", v5_Element = [v2_MediaElement, v3_SvgElement, "Element|HTMLAnchorElement|HTMLAppletElement|HTMLAreaElement|HTMLBRElement|HTMLBaseElement|HTMLBaseFontElement|HTMLBodyElement|HTMLButtonElement|HTMLCanvasElement|HTMLContentElement|HTMLDListElement|HTMLDataListElement|HTMLDetailsElement|HTMLDirectoryElement|HTMLDivElement|HTMLElement|HTMLEmbedElement|HTMLFieldSetElement|HTMLFontElement|HTMLFormElement|HTMLFrameElement|HTMLFrameSetElement|HTMLHRElement|HTMLHeadElement|HTMLHeadingElement|HTMLHtmlElement|HTMLIFrameElement|HTMLImageElement|HTMLInputElement|HTMLKeygenElement|HTMLLIElement|HTMLLabelElement|HTMLLegendElement|HTMLLinkElement|HTMLMapElement|HTMLMarqueeElement|HTMLMenuElement|HTMLMetaElement|HTMLMeterElement|HTMLModElement|HTMLOListElement|HTMLObjectElement|HTMLOptGroupElement|HTMLOptionElement|HTMLOutputElement|HTMLParagraphElement|HTMLParamElement|HTMLPreElement|HTMLProgressElement|HTMLQuoteElement|HTMLScriptElement|HTMLSelectElement|HTMLShadowElement|HTMLSourceElement|HTMLSpanElement|HTMLStyleElement|HTMLTableCaptionElement|HTMLTableCellElement|HTMLTableColElement|HTMLTableElement|HTMLTableRowElement|HTMLTableSectionElement|HTMLTextAreaElement|HTMLTitleElement|HTMLTrackElement|HTMLUListElement|HTMLUnknownElement"].join("|"), v6_CharacterData = "CDATASection|CharacterData|Comment|Text", v7_Document = "Document|HTMLDocument|SVGDocument", v8_Node = [v5_Element, v6_CharacterData, v7_Document, "Attr|DocumentFragment|DocumentType|EntityReference|Node|Notation|ProcessingInstruction|ShadowRoot"].join("|");
+  $.dynamicSetMetadata([["Uint8Array", v0_Uint8Array], ["ArrayBufferView", [v0_Uint8Array, "ArrayBufferView"].join("|")], ["CanvasRenderingContext", "CanvasRenderingContext|CanvasRenderingContext2D|WebGLRenderingContext"], ["CharacterData", v6_CharacterData], ["Document", v7_Document], ["HTMLMediaElement", v2_MediaElement], ["SVGTextPositioningElement", v1_TextPositioningElement], ["SVGElement", v3_SvgElement], ["Element", v5_Element], ["MouseEvent", v4_MouseEvent], ["Event", [v4_MouseEvent, "AudioProcessingEvent|BeforeLoadEvent|CloseEvent|CompositionEvent|CustomEvent|DeviceMotionEvent|DeviceOrientationEvent|ErrorEvent|Event|FocusEvent|HashChangeEvent|IDBVersionChangeEvent|KeyboardEvent|MediaKeyEvent|MediaStreamEvent|MediaStreamTrackEvent|MessageEvent|MutationEvent|OfflineAudioCompletionEvent|OverflowEvent|PageTransitionEvent|PopStateEvent|ProgressEvent|RTCDTMFToneChangeEvent|RTCDataChannelEvent|RTCIceCandidateEvent|SVGZoomEvent|SpeechInputEvent|SpeechRecognitionError|SpeechRecognitionEvent|StorageEvent|TextEvent|TouchEvent|TrackEvent|TransitionEvent|UIEvent|WebGLContextEvent|WebKitAnimationEvent|WebKitTransitionEvent|XMLHttpRequestProgressEvent"].join("|")], ["Node", v8_Node], ["EventTarget", [v8_Node, "DOMWindow|EventTarget"].join("|")], ["HTMLCollection", "HTMLCollection|HTMLFormControlsCollection|HTMLOptionsCollection"], ["NodeList", "NodeList|RadioNodeList"]]);
 })();
 
 $.main.call$0 = $.main;
