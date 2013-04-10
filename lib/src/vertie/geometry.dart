@@ -27,6 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 part of vertie;
 
+/* 2D Point */
 class Point {
   num x;
   num y;
@@ -57,9 +58,9 @@ class Point {
   }
 }
 
+/* 2D Vector with origin at (0, 0) */
 class Vector extends Point {
   Vector(x, y) : super(x, y);
-  /*  For simplicy we assume vectors have origin (0,0) to (PointX, PointY) */
 }
 
 
@@ -79,6 +80,7 @@ class Line {
     assert(A.x != B.x || A.y != B.y); // don't accept zero length line
   }
 
+  // http://paulbourke.net/geometry/pointlineplane/
   Intersection intersection_point(Point C) {
     /*
     Returns (point, in_segement)

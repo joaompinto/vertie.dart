@@ -41,13 +41,11 @@ class CircleShape {
   }
 
   bool hit(Point point) {
-    num length = center.distanceTo(point);
-    return length < radius;
+    return center.distanceTo(point) < radius;
   }
 
   void accelerate(num delta) {
-    num x, y;
-    x = center.x; y = center.y;
+    final x = center.x, y=center.y;
 
     center.x += ax * delta * delta;
     center.y += ay * delta * delta;
@@ -81,8 +79,41 @@ class CircleShape {
     }
   }
 
-  Point contact_point(Line L){
-    /*  Returns the contact point with a line */
+
+  /*
+   * Return the list of points for the intersection with line
+   * http://stackoverflow.com/a/1090772/401041
+   */
+  List<Point> intersect_line(Line line) {
+    final A = line.A, B = line.B, C = center;
+
+    // compute the triangle area times 2 (area = area2/2)
+    final area2 = ((B.x-A.x)*(C.y-A.y) - (C.x-A.x)*(B.y-A.y)).abs();
+    // compute the AB segment length
+    final LAB = A.distanceTo(B);
+    // compute the triangle height
+    final  h = area2/LAB;
+    // compute the line AB direction vector components
+    final  Dx = (B.x-A.x)/LAB;
+    final  Dy = (B.y-A.y)/LAB;
+    // compute the distance from A toward B of closest point to C
+    final t = Dx*(C.x-A.x) + Dy*(C.y-A.y);
+    // compute the intersection point distance from t
+    final dt = sqrt(pow(radius,2) - pow(h,2));
+    // compute first intersection point coordinate
+    final Ex = A.x + (t-dt)*Dx;
+    final Ey = A.y + (t-dt)*Dy;
+    // compute second intersection point coordinate
+    final Fx = A.x + (t+dt)*Dx;
+    final Fy = A.y + (t+dt)*Dy;
+    return [new Point(Ex, Ey), new Point(Fx, Fy)];
+  }
+
+  /* Returns the contact point with a line
+   *
+   */
+  Point contact_point(Line L) {
+
     Intersection vi;
     num distance;
     Point p;
