@@ -1,177 +1,25 @@
-library vertie;
+part of vertie;
 
-import 'dart:math';
-
-class VertiePoint {
-  num x;
-  num y;
-
-  VertiePoint(this.x, this.y);
-
-  num distanceTo(VertiePoint other) {
-    return sqrt(squaredDistanceTo(other));
-  }
-
-  num squaredDistanceTo(VertiePoint other) {
-    var dx = x - other.x;
-    var dy = y - other.y;
-    return dx * dx + dy * dy;
-  }
-
-  /* Return the neareast point from a list of points */
-  VertiePoint nearest(List<VertiePoint> points) {
-    VertiePoint nearest_point = points[0];
-    num min_length = squaredDistanceTo(points[0]);
-    for (final point in points) {
-      num length = squaredDistanceTo(point);
-      if (length < min_length) {
-        nearest_point = point;
-      }
-    }
-    return nearest_point;
-  }
-}
-
-class VertieVector extends VertiePoint {
-  VertieVector(x, y) : super(x, y);
-  /*  For simplicy we assume vectors have origin (0,0) to (PointX, PointY) */
-}
-
-
-class VertieIntersection {
-  VertiePoint point;
-  bool in_segment;
-
-  VertieIntersection(this.point, this.in_segment);
-}
-
-class VertieLine {
-  /* Line between point A and B */
-  VertiePoint A;
-  VertiePoint B;
-
-  VertieLine(this.A, this.B) {
-    assert(A.x != B.x || A.y != B.y); // don't accept zero length line
-  }
-
-
-  VertieIntersection intersection_point(VertiePoint C) {
-    /*
-    Returns (point, in_segement)
-      point - the point from the line which is closer to point C
-      in_segement - True if the point is contained in the line seg
-    Math from http://paulbourke.net/geometry/pointline/
-    */
-    var intersection_x;
-    var intersection_y;
-    var in_segment;
-
-    num line_length = A.distanceTo(B);
-    num u = (((C.x - A.x ) * ( B.x - A.x )) +
-        ((C.y - A.y) * (B.y - A.y))) / ( line_length * line_length);
-
-    in_segment = !(u < 0 || u > 1);
-
-    // Determine point of intersection
-    intersection_x = A.x + u * ( B.x - A.x);
-    intersection_y = A.y + u * ( B.y - A.y);
-
-    return new VertieIntersection(new VertiePoint(intersection_x, intersection_y), in_segment);
-  }
-
-  VertiePoint contact_point(VertieCircleShape C){
-    /*  Returns the contact point with a circle */
-    VertieIntersection vi;
-    num distance;
-    VertiePoint p;
-    vi = intersection_point(C.center);
-    p = vi.point;
-    if(!vi.in_segment)
-      p = C.center.nearest([A, B]);
-    distance = p.distanceTo(C.center);
-    if(distance > C.radius)
-      return null;
-    else
-      return p;
-  }
-}
-
-
-class VertieCircleShape {
-  num radius;
-  VertiePoint center;
-  VertiePoint prev_center;
-  num ax, ay;
-
-  /* Circle shape centered at point P */
-  VertieCircleShape(this.center, this.radius) {
-    ax = 0; ay = 0;
-    prev_center = new VertiePoint(center.x, center.y);
-  }
-
-  bool hit(VertiePoint point) {
-    num length = center.distanceTo(point);
-    return length < radius;
-  }
-
-  void accelerate(num delta) {
-    num x, y;
-    x = center.x; y = center.y;
-
-    center.x += ax * delta * delta;
-    center.y += ay * delta * delta;
-    ax = 0; ay = 0;
-  }
-
-  void inertia() {
-    num x,y;
-    x = center.x*2 - prev_center.x; y = center.y*2 - prev_center.y;
-    prev_center = center;
-    center = new VertiePoint(x, y);
-   }
-
-  void apply_friction(num friction) {
-    final x = (prev_center.x - center.x);
-    final y = (prev_center.y - center.y);
-    final length = sqrt(x*x + y*y);
-    if(x != 0) {
-      ax += (x/length)*friction;
-      if(x.abs() < 0.04) { // stop on residual acceleration
-        ax = 0;
-        prev_center.x = center.x;
-      }
-    }
-    if(y !=  0) {
-      ay += (y/length)*friction;
-      if(y.abs() < 0.04) {  // stop on residual acceleration
-        ay = 0;
-        prev_center.y = center.y;
-      }
-    }
-  }
-}
-
-
-class VertieWorld {
-  List<VertieCircleShape> circle_shapes;
-  List<VertieLine> lines;
+class World {
+  List<CircleShape> circle_shapes;
+  List<Line> lines;
   num width, height;
   num damping, friction;
-  VertieVector gravity;
+  Vector gravity;
 
-  VertieWorld(this.width, this.height,
+  World(this.width, this.height,
       [this.damping = 0.9, this.friction = 0]) {
     circle_shapes = [];
     lines = [];
-    gravity = new VertieVector(0,0);
+    gravity = new Vector(0,0);
   }
 
   void collide(preserve_impulse) {
     /// Check all bodies for collisions
     for (var i = 0; i < circle_shapes.length; i++) {
-      VertieCircleShape shape1 = circle_shapes[i];
+      CircleShape shape1 = circle_shapes[i];
       for (var j = i+1; j < circle_shapes.length; j++) {
-        VertieCircleShape shape2 = circle_shapes[j];
+        CircleShape shape2 = circle_shapes[j];
         num x = shape1.center.x - shape2.center.x;
         num y = shape1.center.y - shape2.center.y;
         num slength = x*x+y*y;
@@ -217,7 +65,7 @@ class VertieWorld {
   void colide_with_lines(bool preserve_impulse) {
     for(final line in lines) {
       for(final shape in circle_shapes) {
-        VertiePoint contact_point = line.contact_point(shape);
+        Point contact_point = shape.contact_point(line);
         if(contact_point  == null)
           continue;
 
@@ -338,3 +186,4 @@ class VertieWorld {
     circle_shapes.remove(shape);
   }
 }
+

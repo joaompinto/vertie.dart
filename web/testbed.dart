@@ -6,7 +6,7 @@ library testbed;
 
 import 'dart:html';
 import 'dart:math';
-import 'vertie.dart';
+import '../lib/vertie.dart' as vertie;
 
 /**
  * The entry point to the application.
@@ -43,11 +43,11 @@ class SimulationSystem {
   num _width;
   num _height;
 
-  VertieWorld world;
+  vertie.World world;
 
   num renderTime;
 
-  VertiePoint line_start_pos, line_end_pos;
+  vertie.Point line_start_pos, line_end_pos;
 
 
   SimulationSystem(this.canvas) {
@@ -80,17 +80,17 @@ class SimulationSystem {
   }
 
   _start() {
-    world = new VertieWorld(width, height);
-    world.gravity = new VertieVector(0, 0.5);
+    world = new vertie.World(width, height);
+    world.gravity = new vertie.Vector(0, 0.5);
 
     // Start the animation loop.
     requestRedraw();
   }
 
   void onMouseDown(MouseEvent e) {
-    var pos = new VertiePoint(e.offset.x, e.offset.y);
+    var pos = new vertie.Point(e.offset.x, e.offset.y);
     if(e.button == 0) {
-      var circle = new VertieCircleShape(pos, 20);
+      var circle = new vertie.CircleShape(pos, 20);
       world.add_circle_shape(circle);
     } else if(e.button == 2) {
       line_start_pos = pos;
@@ -100,9 +100,9 @@ class SimulationSystem {
 
   void onMouseUp(MouseEvent e) {
     if(e.button == 2 && line_start_pos != null) {
-      var pos = new VertiePoint(e.offset.x, e.offset.y);
+      var pos = new vertie.Point(e.offset.x, e.offset.y);
       if(line_start_pos.distanceTo(pos) > 5) {
-        var line = new VertieLine(line_start_pos, pos);
+        var line = new vertie.Line(line_start_pos, pos);
         world.lines.add(line);
       }
     }
@@ -111,7 +111,7 @@ class SimulationSystem {
   }
 
   void onMouseMove(MouseEvent e) {
-    var pos = new VertiePoint(e.offset.x, e.offset.y);
+    var pos = new vertie.Point(e.offset.x, e.offset.y);
     if(line_start_pos != null) {
       line_end_pos = pos;
     }
